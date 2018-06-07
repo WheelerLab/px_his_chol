@@ -10,21 +10,26 @@ ChrENGene$gene <- as.character(ChrENGene$gene)
 ChrENGene$gene <- gsub("\\..*", "", ChrENGene$gene)
 
 for(pheno in pheno_list){
-  first_tiss <- fread(GEMMA_output %&% pheno %&% "_TW_Adipose_Subcutaneous_0.5.db.assoc.txt") #initialize dataframe
+  first_tiss <- fread(GEMMA_output %&% pheno %&% "_TW_Adipose_Subcutaneous_0.5.db.assoc.txt")
   first_tiss$FDR <- p.adjust(first_tiss$p_wald)
   first_tiss$tissue <- "TW_Adipose_Subcutaneous_0.5.db"
+  first_tiss$bon_sig <- 0.05/dim(first_tiss)[1]
   for(tiss in tiss_list){
     next_tiss <- fread(GEMMA_output %&% pheno %&% "_" %&% tiss %&% ".assoc.txt") 
     next_tiss$FDR <- p.adjust(next_tiss$p_wald)
     next_tiss$tissue <- tiss
+    next_tiss$bon_sig <- 0.05/dim(next_tiss)[1]
     first_tiss <- rbind(first_tiss, next_tiss)
   }
   first_tiss$rs <- gsub("\\..*", "", first_tiss$rs)
-  colnames(first_tiss) <- c("chr", "gene", "ps", "n_miss", "allele1", "allele0", "af", "beta", "se", "l_remle", "l_mle", "p_wald", "p_lrt", "p_score", "FDR", "tissue")
+  colnames(first_tiss) <- c("chr", "gene", "ps", "n_miss", "allele1", "allele0", "af", "beta", "se", "l_remle", "l_mle", "p_wald", "p_lrt", "p_score", "FDR", "tissue", "bon_sig")
   genes <- left_join(first_tiss, ChrENGene)
-  genes <- genes[c("CHR", "gene", "genename", "tissue", "beta", "se", "l_remle", "l_mle", "p_wald", "FDR")]
+  genes <- genes[c("CHR", "gene", "genename", "tissue", "beta", "se", "l_remle", "l_mle", "p_wald", "FDR", "bon_sig")]
   fwrite(genes, GEMMA_output %&% pheno %&% "_all.csv", sep = ",")
-  sig_0.05 <- subset(genes, FDR < 0.05)
+  sig_0.05 <- subset(genes, FDR < 0.05) #genes that have false discovery rate < 0.05
   fwrite(sig_0.05, GEMMA_output %&% pheno %&% "_FDR_0.05.csv", sep = ",")
+  sig_bon <- subset(genes, p_wald < bon_sig) #genes that are bonferroni significant
+  fwrite(sig_bon, GEMMA_output %&% pheno %&% "_bon_sig.csv", sep = ",")
 }
+
 
