@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#extracts SNP weights from .db files
 """
 Created on Fri Jun 08 13:24:37 2018
 
@@ -6,7 +6,7 @@ Created on Fri Jun 08 13:24:37 2018
 """
 import sqlite3
 import pandas
-pop = "ALL"
+pop = "ALL" #I totally could've made this a list or a user input
 input_genenames = ["ATG4C", "ATP13A1", "ATXN1L", "DOCK7", "PSRC1", "USP1", "CETP", "DUS2L", "EPOR", "GFOD2", "LPL", "NLRC5", "NUTF2", "PLA2G15", "TMEM205", "ATG4C", "BRE", "CCDC121", "DOCK7", "EIF2B4", "LPL", "NRBP1", "SNX17", "USP1", "ZNF513", "ATP13A1", "HMGCR", "PSRC1"]
 input_genenames = set(input_genenames) #only unique names
 db_path = "/home/lauren/files_for_revisions_plosgen/en_v7/dbs/"
@@ -33,4 +33,4 @@ for input_genename in input_genenames:
 gene_output_df.to_csv(output_path + pop + "_sig_gene_weights.txt", index = False)
 
 #in the very end replace gene w/ genename
-#left_join to the HCHS.freq
+#join to the HCHS.freq
