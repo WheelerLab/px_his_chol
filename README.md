@@ -14,3 +14,5 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 06_sig_SNP_GEMMA.py: finds significant SNPs in a series of GEMMA files
 
 07_1000_to_PCA.py: extract YRI, CEU, and PEL from 1000G to use as anchors in Hispanic PCA
+
+08_compare_MESA.py: extract SNP weights from .db files
