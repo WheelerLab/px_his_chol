@@ -12,3 +12,5 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 05_sig_genes_GEMMA_pred_exp.R: finds most significant genes (both FDR < 0.05 and p < bonferroni correction) from GEMMA predicted expression LMM output
 
 06_sig_SNP_GEMMA.py: finds significant SNPs in a series of GEMMA files
+
+07_1000_to_PCA.py: extract YRI, CEU, and PEL from 1000G to use as anchors in Hispanic PCA
