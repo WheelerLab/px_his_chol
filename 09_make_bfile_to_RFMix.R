@@ -69,6 +69,13 @@ for(i in 1:22){
   # Transpose back
   alleles = t(all01)
   fwrite(alleles, paste(wd, "HCHS/alleles", chr, ".txt", sep=""), quote=F, sep="", col.names=F, row.names=F)
+
+  #make centimorgan map because this is apparently 1980
+  HCHS_map <- fread(paste("HCHS/HCHS.chr-", i, ".map", sep = ""), header=F, stringsAsFactors=F)
+  colnames(HCHS_map) <- c("rsid", "Position(bp)", "A1", "A0")
+  UCSC_map <- fread(paste("calculatecM/genetic_map_GRCh37_chr", i, ".txt", sep = ""), header = T)
+  map <- left_join(HCHS_map, UCSC_map)
+  fwrite(as.data.frame(map[,7]), paste("HCHS/marker_positions_chr", i, ".txt", sep = ""), col.names = F, quote = F, na = "NA")
 }
 
 # Classes
