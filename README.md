@@ -16,3 +16,5 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 07_1000_to_PCA.py: extract YRI, CEU, and PEL from 1000G to use as anchors in Hispanic PCA
 
 08_compare_MESA.py: extract SNP weights from .db files
+
+09_make_bfile_to_RFMix: converts from PLINK --recode beagle output to RFMix input
