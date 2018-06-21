@@ -38,7 +38,7 @@ for(i in 1:22){
   
   makeYRI <- paste("plink --bfile /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/YRI --chr ", i ," --recode beagle --out /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/refPanel/YRI", sep = "")
   system(makeYRI)
-  YRI <- fread(paste("refPanel/IBS.chr-", i, ".dat", sep = ""), header=F, stringsAsFactors=F, colClasses = "character")
+  YRI <- fread(paste("refPanel/YRI.chr-", i, ".dat", sep = ""), header=F, stringsAsFactors=F, colClasses = "character")
   YRI <- cleanPLINK(YRI)
   numYRI <- ncol(YRI) - 1
 
