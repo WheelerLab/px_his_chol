@@ -20,7 +20,7 @@ for(i in 1:22){
   
   makeHCHS <- paste("plink --bfile /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/HCHS/HIS3 --chr ", i ," --recode beagle --out /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/HCHS/HCHS", sep = "")
   system(makeHCHS)
-  HCHS <- fread("HCHS/HCHS.chr-22.dat", header=F, stringsAsFactors=F, colClasses = "character")
+  HCHS <- fread(paste("HCHS/HCHS.chr-", i, ".dat", sep = ""), header=F, stringsAsFactors=F, colClasses = "character")
   HCHS <- cleanPLINK(HCHS)
   numHCHS <- ncol(HCHS) - 1
   print(paste("HCHS chromosome ", i, " is done processing.", sep = ""))
