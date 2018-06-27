@@ -43,7 +43,7 @@ for(i in 1:22){
   print(paste("IBS, chromosome ", i, " has finished processing.", sep = ""))
   
   #remove individuals in test pop w/ low call rate
-  HCHS <- HCHS[, colSums(is.na(HCHS)) <= remove_SNP_threshold] #set this threshold as necessary
+  HCHS <- HCHS[, names(which(colSums(is.na(HCHS)) <= remove_SNP_threshold))] #set this threshold as necessary
   numHCHS <- ncol(HCHS) - 1
   IIDs <- unique(transpose(as.data.frame(HCHS[1,]))) #individuals remaining
   fwrite(IIDs, paste("/home/angela/px_his_chol/RFMix/RFMix_v1.5.4/IIDs_chr_", i, "_", remove_SNP_threshold, ".txt", sep = ""), col.names = F, row.names = F, quote = F, na = "NA")
