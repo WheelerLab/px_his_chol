@@ -17,4 +17,6 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 08_compare_MESA.py: extract SNP weights from .db files
 
-09_make_bfile_to_RFMix: converts from PLINK --recode beagle output to RFMix input
+09_make_bfile_to_RFMix: converts from PLINK --recode beagle output to RFMix input (HAS SEVERE MEMORY ISSUES)
+
+10_chromosome_painting_for_R.py: make "chromsome painting" input (for R's ggplot) from LAMP output
