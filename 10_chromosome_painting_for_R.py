@@ -43,7 +43,7 @@ for prob in range(0, len(ancestry.columns)/3):
     pop_ancs[prob] = personal_anc #add to data frame of all
     pop_ancs.columns.values[prob] = person_ID
     start = start + 3
-    print("Finished with person " + (prob + 1) + " out of " + len(ancestry.columns)/3 + ".")
+    print("Finished with person " + str(prob + 1) + " out of " + str(len(ancestry.columns)/3) + ".")
 pop_ancs.to_csv(args.output_prefix + ".csv", na_rep = "NA", header = True, index = False)
 print("Done with conversion. Exiting program. Have a nice day :).")
 
