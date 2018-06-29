@@ -33,9 +33,9 @@ for prob in range(0, len(ancestry.columns)/3):
     personal_anc = []
     for SNP in range(0, len(person)): #most likely ancestry by SNP
         if person.iloc[SNP, 0] > (person.iloc[SNP, 1] + person.iloc[SNP, 2]):
-            personal_anc.append("CEU")
+            personal_anc.append("IBS")
         elif person.iloc[SNP, 1] > (person.iloc[SNP, 0] + person.iloc[SNP, 2]):
-            personal_anc.append("CHB")
+            personal_anc.append("PEL")
         elif person.iloc[SNP, 2] > (person.iloc[SNP, 0] + person.iloc[SNP, 1]):
             personal_anc.append("YRI")
         else:
