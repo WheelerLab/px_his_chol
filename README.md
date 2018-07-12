@@ -21,4 +21,4 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 10_chromosome_painting_for_R.py: make "chromsome painting" input (for R's ggplot) from LAMP output
 
-11_filter_SGDP.sh: #Pipeline to merge and convert all downloaded genotypes from SGDP
+11_filter_SGDP.sh: Pipeline to merge and convert all downloaded genotypes from SGDP
