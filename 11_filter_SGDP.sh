@@ -14,7 +14,7 @@ do
   bcftools index --threads 40 -f --tbi -o $ind.FL9.vcf.tbi $ind.FL9.vcf.gz
   echo "Done indexing on" $ind
   #3. Add rsid, REF, and ALT alleles
-  bcftools annotate --threads 40 -a anno/homo_sapiens.vcf.gz -c CHROM,POS,ID,REF,ALT --output $ind.FL9.anno.vcf $ind.FL9.vcf.gz
+  bcftools annotate --threads 40 -a anno/All_20180423.vcf.gz -c CHROM,POS,ID,REF,ALT --output $ind.FL9.anno.vcf $ind.FL9.vcf.gz
   echo "Done annotating on" $ind
   #4. Print known biallelic sites only (ID column is not ".")
   bcftools view --threads 40 --known -m2 -M2 -v snps -o $ind.FL9.anno.known.vcf $ind.FL9.anno.vcf
