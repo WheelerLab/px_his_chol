@@ -40,22 +40,3 @@ echo "Samples have been filtered to SNPs only"
 plink --vcf NativeMexican.PASS.match.sorted.known.vcf.gz --vcf-half-call h --make-bed --out NativeMexican-h
   #half-called genotypes treated as haploid/homozygous (Complete Genomics data)
 
-
-#BELOW IS OLD
-#2. Add rsids
-  bcftools annotate --threads 40 -a /home/angela/px_his_chol/SGDP_filtered/anno/All_20180423.vcf.gz -c CHROM,POS,ID,ALT $ind.PASS.vcf.gz > $ind.PASS.anno.vcf
-  bgzip $ind.PASS.anno.vcf
-  echo "Done annotating on" $ind
-  #3. SNPs only
-  bcftools view --threads 40 --known -m2 -M2 -v snps $ind.PASS.anno.vcf.gz > $ind.PASS.anno.known.vcf
-  bgzip $ind.PASS.anno.known.vcf
-  bcftools index --threads 40 -f --tbi $ind.PASS.anno.known.vcf.gz > $ind.PASS.anno.known.vcf.tbi
-  echo "Done viewing on" $ind
-
-
-#then merge
-bcftools merge --merge all MAY1.PASS.anno.known.vcf.gz MAY2.PASS.anno.known.vcf.gz NAH1.PASS.anno.known.vcf.gz NAH2.PASS.anno.known.vcf.gz TAR1.PASS.anno.known.vcf.gz TAR2.PASS.anno.known.vcf.gz TOT1.PASS.anno.known.vcf.gz TOT2.PASS.anno.known.vcf.gz ZAP1.PASS.anno.known.vcf.gz ZAP2.PASS.anno.known.vcf.gz > NativeMexican.vcf
-bgzip NativeMexican.vcf
-bcftools index --threads 40 -f --tbi NativeMexican.vcf.gz > NativeMexican.vcf.tbi
-plink --vcf NativeMexican.vcf.gz --vcf-half-call h --make-bed --out NativeMexican-h
-  #half-called genotypes treated as haploid/homozygous (Complete Genomics data)
