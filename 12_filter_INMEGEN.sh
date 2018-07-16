@@ -23,11 +23,26 @@ bcftools annotate --threads 40 -a /home/angela/px_his_chol/SGDP_filtered/anno/Al
   #add rsid
 bgzip NativeMexican.PASS.rsid.vcf
 bcftools index --threads 40 -f --tbi NativeMexican.PASS.rsid.vcf.gz > NativeMexican.PASS.rsid.vcf.tbi
+echo "rsids have been added"
 bcftools +fixref NativeMexican.PASS.rsid.vcf.gz -Ob -o NativeMexican.PASS.match.vcf --threads 40 -- -d -f /home/angela/human_g1k_v37.fasta -i /home/angela/px_his_chol/SGDP_filtered/anno/All_20180423.vcf.gz
   #add REF/ALT
+bcftools sort NativeMexican.PASS.match.vcf -Ob -o NativeMexican.PASS.match.sorted.vcf
+echo "Samples have been sorted"
+
+#4. Filter to SNPs only
+bcftools view --threads 40 --known -m2 -M2 -v snps NativeMexican.PASS.match.sorted.vcf > NativeMexican.PASS.match.sorted.known.vcf
+bgzip NativeMexican.PASS.match.sorted.vcf
+bgzip NativeMexican.PASS.match.sorted.known.vcf
+bcftools index --threads 40 -f --tbi NativeMexican.PASS.match.sorted.known.vcf.gz > NativeMexican.PASS.match.sorted.known.vcf.tbi
+echo "Samples have been filtered to SNPs only"
+
+#5. Convert to PLINK
+plink --vcf NativeMexican.PASS.match.sorted.known.vcf.gz --vcf-half-call h --make-bed --out NativeMexican-h
+  #half-called genotypes treated as haploid/homozygous (Complete Genomics data)
 
 
-  #2. Add rsids
+#BELOW IS OLD
+#2. Add rsids
   bcftools annotate --threads 40 -a /home/angela/px_his_chol/SGDP_filtered/anno/All_20180423.vcf.gz -c CHROM,POS,ID,ALT $ind.PASS.vcf.gz > $ind.PASS.anno.vcf
   bgzip $ind.PASS.anno.vcf
   echo "Done annotating on" $ind
@@ -36,7 +51,7 @@ bcftools +fixref NativeMexican.PASS.rsid.vcf.gz -Ob -o NativeMexican.PASS.match.
   bgzip $ind.PASS.anno.known.vcf
   bcftools index --threads 40 -f --tbi $ind.PASS.anno.known.vcf.gz > $ind.PASS.anno.known.vcf.tbi
   echo "Done viewing on" $ind
-done
+
 
 #then merge
 bcftools merge --merge all MAY1.PASS.anno.known.vcf.gz MAY2.PASS.anno.known.vcf.gz NAH1.PASS.anno.known.vcf.gz NAH2.PASS.anno.known.vcf.gz TAR1.PASS.anno.known.vcf.gz TAR2.PASS.anno.known.vcf.gz TOT1.PASS.anno.known.vcf.gz TOT2.PASS.anno.known.vcf.gz ZAP1.PASS.anno.known.vcf.gz ZAP2.PASS.anno.known.vcf.gz > NativeMexican.vcf
