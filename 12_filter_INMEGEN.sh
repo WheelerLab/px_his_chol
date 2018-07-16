@@ -1,3 +1,4 @@
+#Convert and filter individual vcf files to PLINK format
 declare -a arr=("MAY1" "MAY2" "NAH1" "NAH2" "TAR1" "TAR2" "TOT1" "TOT2" "ZAP1" "ZAP2")
 cd /home/angela/px_his_chol/INMEGEN/
 
