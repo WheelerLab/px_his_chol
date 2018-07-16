@@ -10,6 +10,23 @@ do
   echo "Done filtering on" $ind
   bcftools index --threads 40 -f --tbi $ind.PASS.vcf.gz > $ind.PASS.vcf.tbi
   echo "Done indexing on" $ind
+done
+
+#2. Merge samples
+bcftools merge --merge all MAY1.PASS.vcf.gz MAY2.PASS.vcf.gz NAH1.PASS.vcf.gz NAH2.PASS.vcf.gz TAR1.PASS.vcf.gz TAR2.PASS.vcf.gz TOT1.PASS.vcf.gz TOT2.PASS.vcf.gz ZAP1.PASS.vcf.gz ZAP2.PASS.vcf.gz > NativeMexican.vcf
+bgzip NativeMexican.vcf
+bcftools index --threads 40 -f --tbi NativeMexican.PASS.vcf.gz > NativeMexican.PASS.vcf.tbi
+echo "Samples have been merged"
+
+#3. Add rsid, REF, and ALT
+bcftools annotate --threads 40 -a /home/angela/px_his_chol/SGDP_filtered/anno/All_20180423.vcf.gz -c CHROM,POS,ID NativeMexican.PASS.vcf.gz > NativeMexican.PASS.rsid.vcf
+  #add rsid
+bgzip NativeMexican.PASS.rsid.vcf
+bcftools index --threads 40 -f --tbi NativeMexican.PASS.rsid.vcf.gz > NativeMexican.PASS.rsid.vcf.tbi
+bcftools +fixref NativeMexican.PASS.rsid.vcf.gz -Ob -o NativeMexican.PASS.match.vcf --threads 40 -- -d -f /home/angela/human_g1k_v37.fasta -i /home/angela/px_his_chol/SGDP_filtered/anno/All_20180423.vcf.gz
+  #add REF/ALT
+
+
   #2. Add rsids
   bcftools annotate --threads 40 -a /home/angela/px_his_chol/SGDP_filtered/anno/All_20180423.vcf.gz -c CHROM,POS,ID,ALT $ind.PASS.vcf.gz > $ind.PASS.anno.vcf
   bgzip $ind.PASS.anno.vcf
