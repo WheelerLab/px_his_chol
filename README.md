@@ -24,3 +24,5 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 11_filter_SGDP.sh: Convert and filter individual vcf files to PLINK format
 
 12_filter_INMEGEN.sh: Convert and filter individual vcf files to PLINK format
+
+13_make_KING.R: Runs KING and converts output to both matrix and GCTA format
