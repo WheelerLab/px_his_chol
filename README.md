@@ -1,5 +1,5 @@
 # px_his_chol
-Scripts used in studying the lipid traits of the Hispanic Community Health Study and the Multi-Ethnic Study of Atherosclerosis
+Scripts used in studying the lipid traits of the Hispanic Community Health Study and the Multi-Ethnic Study of Atherosclerosis, Hispanic
 
 01_PrediXcan_dosages_to_GEMMA_BIMBAM.py: converts PrediXcan-style dosages (from UMich_vcf2px.py or Sanger_vcf2px.py) to GEMMA BIMBAM style
 
@@ -19,10 +19,10 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 09_make_bfile_to_RFMix: converts from PLINK --recode beagle output to RFMix input (HAS SEVERE MEMORY ISSUES)
 
-10_chromosome_painting_for_R.py: make "chromsome painting" input (for R's ggplot) from LAMP output
+10_chromosome_painting_for_R.py: make "chromosome painting" input (for R's ggplot) from LAMP output
 
-11_filter_SGDP.sh: Convert and filter individual vcf files to PLINK format
+11_filter_Native_American_WGS.sh: Convert and filter individual vcf files to PLINK format
 
-12_filter_INMEGEN.sh: Convert and filter individual vcf files to PLINK format
+12_pi1.R: Calculates pi1 across phenotypes b/w HCHS and MESA HIS
 
 13_make_KING.R: Runs KING and converts output to both matrix and GCTA format
