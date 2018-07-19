@@ -19,7 +19,7 @@ do
   echo "Done indexing on" $ind
 done
 
-#2. Merge samples
+#3. Merge samples
 bcftools merge --threads 40 --merge all LP*.FL9.noINFO.vcf.gz SS*.FL9.noINFO.vcf.gz > SGDP.FL9.noINFO.vcf
 bgzip SGDP.FL9.noINFO.vcf
 bcftools index --threads 40 -f --tbi SGDP.FL9.noINFO.vcf.gz > SGDP.FL9.noINFO.vcf.tbi
@@ -31,11 +31,11 @@ declare -a arr=("MAY1" "MAY2" "NAH1" "NAH2" "TAR1" "TAR2" "TEP1" "TEP2" "TOT1" "
 
 for ind in "${arr[@]}"
 do
-  #3. Filter by passing SNPs
+  #4. Filter by passing SNPs
   echo "Starting filtering on" $ind
   bcftools filter -i  --threads 40'FORMAT/FT=="PASS"' /home/wheelerlab3/Data/INMEGEN/12G/$ind.vcf.gz > $ind.PASS.vcf
   bgzip $ind.PASS.vcf
-  #4. Remove non-genotype information
+  #5. Remove non-genotype information
   bcftools annotate --threads 40 -x INFO,^FORMAT/GT $ind.PASS.vcf.gz > $ind.PASS.noINFO.vcf
   bgzip $ind.PASS.noINFO.vcf
   echo "Done filtering on" $ind
@@ -43,18 +43,18 @@ do
   echo "Done indexing on" $ind
 done
 
-#5. Merge samples
+#6. Merge samples
 bcftools merge --threads 40 --merge all *.PASS.noINFO.vcf.gz > NativeMexican.PASS.noINFO.vcf
 bgzip NativeMexican.PASS.noINFO.vcf
 bcftools index --threads 40 -f --tbi NativeMexican.PASS.noINFO.vcf.gz > NativeMexican.PASS.noINFO.vcf.tbi
 echo "Native Mexican samples have been merged"
 
-#6. Merge SGDP and Native Mexican
+#7. Merge SGDP and Native Mexican
 cd /home/angela/px_his_chol/SGDP_filtered/
 bcftools merge --threads 40 SGDP.FL9.noINFO.vcf.gz /home/angela/px_his_chol/INMEGEN/NativeMexican.PASS.noINFO.vcf.gz > NativeAmerican.PASS.noINFO.vcf
 bgzip NativeAmerican.PASS.noINFO.vcf
 
-#7. Add rsid, REF, and ALT
+#8. Add rsid, REF, and ALT
 bcftools annotate --threads 40 -a /home/angela/px_his_chol/SGDP_filtered/anno/All_20180423.vcf.gz -c CHROM,POS,ID NativeAmerican.PASS.noINFO.vcf.gz > NativeAmerican.PASS.noINFO.rsid.vcf
 bgzip NativeAmerican.PASS.noINFO.rsid.vcf
 bcftools index --threads 40 -f --tbi NativeAmerican.PASS.noINFO.rsid.vcf.gz > NativeAmerican.PASS.noINFO.rsid.vcf.tbi
@@ -66,13 +66,13 @@ bgzip NativeAmerican.PASS.noINFO.rsid.fixed.vcf
 bgzip NativeAmerican.PASS.noINFO.rsid.fixed.sorted.vcf
 echo "Samples have been sorted"
 
-#8. Filter to SNPs only
+#9. Filter to SNPs only
 bcftools view --threads 40 --known -m2 -M2 -v snps NativeAmerican.PASS.noINFO.rsid.fixed.sorted.vcf.gz > NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf
 bgzip NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf
 bcftools index --threads 40 -f --tbi NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf.gz > NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf.tbi
 echo "Samples have been filtered to SNPs only"
 
-#9. Convert to PLINK
+#10. Convert to PLINK
 plink --vcf NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf.gz --vcf-half-call h --make-bed --out NativeAmerican-h
   #half-called genotypes treated as haploid/homozygous in Mexican (Complete Genomics data)
 
