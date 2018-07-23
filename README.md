@@ -26,3 +26,5 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 12_pi1.R: Calculates pi1 across phenotypes b/w HCHS and MESA HIS
 
 13_make_KING.R: Runs KING and converts output to both matrix and GCTA format
+
+14_make_eigenvalue_plot.R: make principal component eigenvalue plot as seen in PAGE fig. 4B
