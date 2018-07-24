@@ -59,21 +59,15 @@ bcftools annotate --threads 40 -a /home/angela/px_his_chol/SGDP_filtered/anno/Al
 bgzip NativeAmerican.PASS.noINFO.rsid.vcf
 bcftools index --threads 40 -f --tbi NativeAmerican.PASS.noINFO.rsid.vcf.gz > NativeAmerican.PASS.noINFO.rsid.vcf.tbi
 echo "rsids have been added"
-bcftools +fixref NativeAmerican.PASS.noINFO.rsid.vcf.gz -o NativeAmerican.PASS.noINFO.rsid.fixed.vcf --threads 40 -- -d -f /home/angela/human_g1k_v37.fasta -i /home/angela/px_his_chol/SGDP_filtered/anno/All_20180423.vcf.gz
-  #Fix REF/ALT
-bcftools sort NativeAmerican.PASS.noINFO.rsid.fixed.vcf -o NativeAmerican.PASS.noINFO.rsid.fixed.sorted.vcf
-bgzip NativeAmerican.PASS.noINFO.rsid.fixed.vcf
-bgzip NativeAmerican.PASS.noINFO.rsid.fixed.sorted.vcf
-echo "Samples have been sorted"
 
 #9. Filter to SNPs only
-bcftools view --threads 40 --known -m2 -M2 -v snps NativeAmerican.PASS.noINFO.rsid.fixed.sorted.vcf.gz > NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf
-bgzip NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf
-bcftools index --threads 40 -f --tbi NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf.gz > NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf.tbi
+bcftools view --threads 40 --known -m2 -M2 -v snps NativeAmerican.PASS.noINFO.rsid.vcf.gz > NativeAmerican.PASS.noINFO.rsid.SNPs.vcf
+bgzip NativeAmerican.PASS.noINFO.rsid.SNPs.vcf
+bcftools index --threads 40 -f --tbi NativeAmerican.PASS.noINFO.rsid.SNPs.vcf.gz > NativeAmerican.PASS.noINFO.rsid.SNPs.vcf.tbi
 echo "Samples have been filtered to SNPs only"
 
 #10. Convert to PLINK
-plink --vcf NativeAmerican.PASS.noINFO.rsid.fixed.sorted.SNPs.vcf.gz --vcf-half-call h --make-bed --out NativeAmerican-h
+plink --vcf NativeAmerican.PASS.noINFO.rsid.SNPs.vcf.gz --vcf-half-call h --make-bed --out NativeAmerican-h
   #half-called genotypes treated as haploid/homozygous in Mexican (Complete Genomics data)
 
 
