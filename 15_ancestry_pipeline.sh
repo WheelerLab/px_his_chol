@@ -1,10 +1,7 @@
 #Personal version of https://github.com/armartin/ancestry_pipeline
 
 #RUNNING THE SAMPLE TOY DATA
-#why do I need so many 1-22 loops? Can't they all just be collapsed into one loop?
 cd /home/angela/px_his_chol/ancestry_pipeline/toy_data/
-#1. Split into chromosomes
-#for i in {1..22};
 for i in {22..22};
 do 
   #1. Split into chromosomes
