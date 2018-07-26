@@ -28,3 +28,5 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 13_make_KING.R: Runs KING and converts output to both matrix and GCTA format
 
 14_make_eigenvalue_plot.R: make principal component eigenvalue plot as seen in PAGE fig. 4B
+
+15_ancestry_pipeline.sh: personal version of https://github.com/armartin/ancestry_pipeline
