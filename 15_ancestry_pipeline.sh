@@ -7,7 +7,8 @@ for i in {1..22};
 do 
   #Note: the original .bed/.bim/.fam already has combined reference/test
   #1. Split into chromosomes
-  plink --bfile ACB_example --chr ${i} --make-bed --geno 0.01 --maf 0.01 --out ACB_example_chr${i};
+  plink --bfile ACB_example --chr ${i} --make-bed --out ACB_example_chr${i};
+  plink --bfile ACB_example_chr${i} --geno 0.01 --maf 0.01 --make-bed ACB_example_chr${i};
   #2. Check data is aligned to reference
   shapeit -check --input-ref /home/angela/1000GP_Phase3_combined/1000GP_Phase3_chr${i}.hap.gz /home/angela/1000GP_Phase3_combined/1000GP_Phase3_chr${i}.legend.gz /home/angela/1000GP_Phase3_combined/1000GP_Phase3.sample -B ACB_example_chr${i} --input-map /home/angela/1000GP_Phase3_combined/genetic_map_chr${i}_combined_b37.txt --output-log ACB_example_chr${i}.mendel
   #3. Phasing the dataset using the reference panel of haplotypes (long step)
