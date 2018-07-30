@@ -2,8 +2,8 @@
 
 #RUNNING THE SAMPLE TOY DATA
 cd /home/angela/px_his_chol/ancestry_pipeline/toy_data/
-for i in {1..22};
-#for i in {22..22};
+#for i in {1..22};
+for i in {22..22};
 do 
   #Note: the original .bed/.bim/.fam already has combined reference/test
   #1. Split into chromosomes
@@ -23,7 +23,8 @@ python ../classes.py --ref CEU_example.keep,YRI_example.keep --sample CEU_YRI_AC
 
 #6. Run RFMix (long step)
 cd /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/
-for i in {1..22};
+#for i in {1..22};
+for i in {22..22}
 do
   python RunRFMix.py -e 2 -w 0.2 --num-threads 40 --use-reference-panels-in-EM --forward-backward PopPhased /home/angela/px_his_chol/ancestry_pipeline/toy_data/ACB_example_chr${i}.alleles /home/angela/px_his_chol/ancestry_pipeline/toy_data/CEU_YRI_ACB.classes /home/angela/px_his_chol/ancestry_pipeline/toy_data/ACB_example_chr${i}.snp_locations -o /home/angela/px_his_chol/ancestry_pipeline/toy_data/CEU_YRI_ACB_chr${i}.rfmix
 done
