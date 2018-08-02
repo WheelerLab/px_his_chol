@@ -30,3 +30,5 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 14_make_eigenvalue_plot.R: make principal component eigenvalue plot as seen in PAGE fig. 4B
 
 15_ancestry_pipeline.sh: personal version of https://github.com/armartin/ancestry_pipeline
+
+16_make_qq.R: makes qq and aggregate gene lists from GEMMA/PrediXcan output
