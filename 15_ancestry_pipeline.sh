@@ -29,6 +29,9 @@ do
   python RunRFMix.py -e 2 -w 0.2 --num-threads 40 --use-reference-panels-in-EM --forward-backward PopPhased /home/angela/px_his_chol/ancestry_pipeline/toy_data/ACB_example_chr${i}.alleles /home/angela/px_his_chol/ancestry_pipeline/toy_data/CEU_YRI_ACB.classes /home/angela/px_his_chol/ancestry_pipeline/toy_data/ACB_example_chr${i}.snp_locations -o /home/angela/px_his_chol/ancestry_pipeline/toy_data/CEU_YRI_ACB_chr${i}.rfmix
 done
 
+#7. Collapse RFMix output into TRACTS-compatible bed files (needs all chrs. to be complete first)
+python ../collapse_ancestry.py --rfmix CEU_YRI_ACB_chr22.rfmix.2.Viterbi.txt --snp_locations ACB_example_chr22.snp_locations --fbk CEU_YRI_ACB_chr22.rfmix.2.ForwardBackward.txt --fbk_threshold 0.9 --ind HG02481 --ind_info CEU_YRI_ACB.sample --pop_labels EUR,AFR --chrX --out HG02481
+
 
 
 
