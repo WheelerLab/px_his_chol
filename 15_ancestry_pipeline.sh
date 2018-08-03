@@ -21,7 +21,7 @@ done
 python ../classes.py --ref CEU_example.keep,YRI_example.keep --sample CEU_YRI_ACB.sample --out CEU_YRI_ACB.classes
   #MUST KEEP CONSISTENT WITH INDVIDUAL ORDER IN THE ALLELES FILE
 
-#6. Run RFMix (long step)
+#6. Run RFMix (very very long step)
 cd /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/
 #for i in {1..22};
 for i in {22..22}
@@ -32,14 +32,17 @@ done
 #7. Collapse RFMix output into TRACTS-compatible bed files (needs all chrs. to be complete first)
 python ../collapse_ancestry.py --rfmix CEU_YRI_ACB_chr22.rfmix.2.Viterbi.txt --snp_locations ACB_example_chr22.snp_locations --fbk CEU_YRI_ACB_chr22.rfmix.2.ForwardBackward.txt --fbk_threshold 0.9 --ind HG02481 --ind_info CEU_YRI_ACB.sample --pop_labels EUR,AFR --chrX --out HG02481
 
+###CONTINUE HERE
 
-
-
-
-
-
-
-#RUNNING ACTUAL DATA
-
-
+#RUNNING ACTUAL DATA (chr 22)
+#when running rest of the data, do merging/filtering first
+cd /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/
+for i in {22..22};
+do 
+  shapeit -check --input-ref /home/angela/1000GP_Phase3_combined/1000GP_Phase3_chr${i}.hap.gz /home/angela/1000GP_Phase3_combined/1000GP_Phase3_chr${i}.legend.gz /home/angela/1000GP_Phase3_combined/1000GP_Phase3.sample -B merged_chr${i}_missing_0.05_maf_0.01 --input-map /home/angela/1000GP_Phase3_combined/genetic_map_chr${i}_combined_b37.txt --output-log merged_chr${i}_missing_0.05_maf_0.01.mendel
+  #1. Phasing the dataset using the reference panel of haplotypes (long step)
+  shapeit --input-ref /home/angela/1000GP_Phase3_combined/1000GP_Phase3_chr${i}.hap.gz /home/angela/1000GP_Phase3_combined/1000GP_Phase3_chr${i}.legend.gz /home/angela/1000GP_Phase3_combined/1000GP_Phase3.sample -B merged_chr${i}_missing_0.05_maf_0.01 --duohmm --input-map /home/angela/1000GP_Phase3_combined/genetic_map_chr${i}_combined_b37.txt --exclude-snp merged_chr${i}_missing_0.05_maf_0.01.mendel.snp.strand.exclude --output-max merged_chr${i}_missing_0.05_maf_0.01.haps.gz merged_chr${i}_missing_0.05_maf_0.01.sample
+  #2. Convert to RFMix input
+  python ../shapeit2rfmix.py --shapeit_hap_ref ACB_example_chr${i}.haps.gz --shapeit_hap_admixed ACB_example_chr${i}.haps.gz --shapeit_sample_ref ACB_example_chr${i}.sample --shapeit_sample_admixed ACB_example_chr${i}.sample --ref_keep HCHS_chr22.ref --admixed_keep HCHS_chr22.notref --chr ${i} --genetic_map /home/angela/1000GP_Phase3_combined/genetic_map_chr${i}_combined_b37.txt --out merged_chr${i}_missing_0.05_maf_0.01
+done
 
