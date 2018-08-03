@@ -44,6 +44,6 @@ do
   #3. Phasing the dataset using the reference panel of haplotypes (long step)
   shapeit --input-ref /home/angela/1000GP_Phase3_combined/1000GP_Phase3_chr${i}.hap.gz /home/angela/1000GP_Phase3_combined/1000GP_Phase3_chr${i}.legend.gz /home/angela/1000GP_Phase3_combined/1000GP_Phase3.sample -B merged_chr${i}_filtered_ordered --duohmm --input-map /home/angela/1000GP_Phase3_combined/genetic_map_chr${i}_combined_b37.txt --exclude-snp merged_chr${i}_filtered_ordered.mendel.snp.strand.exclude --output-max merged_chr${i}_filtered_ordered.haps.gz merged_chr${i}_filtered_ordered.sample
   #4. Convert to RFMix input
-  python ../shapeit2rfmix.py --shapeit_hap_ref merged_chr${i}_filtered_ordered.haps.gz --shapeit_hap_admixed merged_chr${i}_filtered_ordered.haps.gz --shapeit_sample_ref merged_chr${i}_filtered_ordered.sample --shapeit_sample_admixed merged_chr${i}_filtered_ordered.sample --ref_keep ACB_example.ref --admixed_keep ACB_example.notref --chr ${i} --genetic_map /home/angela/1000GP_Phase3_combined/genetic_map_chr${i}_combined_b37.txt --out ACB_example
+  python ../shapeit2rfmix.py --shapeit_hap_ref merged_chr${i}_filtered_ordered.haps.gz --shapeit_hap_admixed merged_chr${i}_filtered_ordered.haps.gz --shapeit_sample_ref merged_chr${i}_filtered_ordered.sample --shapeit_sample_admixed merged_chr${i}_filtered_ordered.sample --ref_keep HCHS.ref --admixed_keep HCHS.notref --chr ${i} --genetic_map /home/angela/1000GP_Phase3_combined/genetic_map_chr${i}_combined_b37.txt --out ACB_example
 done
 
