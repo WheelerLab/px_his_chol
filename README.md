@@ -32,3 +32,5 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 15_ancestry_pipeline.sh: personal version of https://github.com/armartin/ancestry_pipeline
 
 16_make_qq.R: makes qq and aggregate gene lists from GEMMA/PrediXcan output
+
+17_make_classes_from_HAPI-UR: makes .classes file for RFMix from HAPI-UR (use in ancestry pipeline)
