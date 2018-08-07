@@ -25,5 +25,6 @@ colnames(pop_file) <- c("FID", "IID", "pop")
 ordered_phind <- left_join(phind, pop_file, by = c("FID", "IID"))
 ordered_phind$pop <- as.numeric(factor(ordered_phind$pop, exclude = test_pop))
 ordered_phind$pop[is.na(ordered_phind$pop)] <- "0"
-write(paste(as.character(ordered_phind$pop), collapse = " "), "/home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/" %&% test_pop %&% ".classes")
+write(paste(as.character(ordered_phind$pop), collapse = " "), test_pop %&% ".classes")
+
 
