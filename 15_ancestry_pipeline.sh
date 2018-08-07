@@ -40,14 +40,17 @@ cd /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/
 for i in {22..22};
 do 
   #1. Phasing the dataset using the reference panel of haplotypes (long step)
-  ##Large (>12k) cohort, so use HAPI-UR instead of SHAPEIT
-  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p merged_chr${i}_filtered_ordered -w 64 -o phase_chr${i}
+  ##Large (>12k) cohort, so use HAPI-UR (very very quick) instead of SHAPEIT
+  rm phase_chr${i}*
+  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p merged_chr${i}_filtered_ordered -w 128 -o phase_chr${i}
   
   #2. Make additional files for RFMix input
   awk '{print $3}' phase_chr${i}.phsnp > phase_chr${i}.snp_locations
   Rscript make_classes_from_HAPI-UR.R phase_chr22.phind ordered_pops.txt HCHS
 
-
+  #3. Run RFMix (takes very long time)
+  cd /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/
+  python RunRFMix.py -e 2 -w 0.2 --num-threads 40 --use-reference-panels-in-EM --forward-backward PopPhased /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/phase_chr22.phgeno /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/HCHS.classes /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/phase_chr22.snp_locations -o /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/phase_chr22.rfmix
 
 done
 
