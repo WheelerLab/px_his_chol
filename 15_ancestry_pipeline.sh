@@ -36,6 +36,7 @@ python ../collapse_ancestry.py --rfmix CEU_YRI_ACB_chr22.rfmix.2.Viterbi.txt --s
 
 #RUNNING ACTUAL DATA (chr 22)
 #when running rest of the data, do merging/filtering first, as well as adding cM to .bim
+#Merged/filtered/ordered PLINK files are 
 cd /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/
 for i in {22..22};
 do 
@@ -51,7 +52,6 @@ do
   #3. Run RFMix (takes very long time)
   cd /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/
   python RunRFMix.py -e 2 -w 0.2 --num-threads 40 --use-reference-panels-in-EM --forward-backward PopPhased /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/phase_chr22.phgeno /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/HCHS.classes /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/phase_chr22.snp_locations -o /home/angela/px_his_chol/ancestry_pipeline/HCHS_chr22/phase_chr22.rfmix
-
 done
 
 #The RFMix portion needs to be changed b/c of 3-way admixture (rather than 2)
