@@ -3,7 +3,7 @@
 #PBS -S /bin/bash
 #PBS -l walltime=500:00:00
 #PBS -l nodes=1:ppn=2
-#PBS -l mem=20gb
+#PBS -l mem=200gb
 #PBS -o logs/${PBS_JOBNAME}.o${PBS_JOBID}.log
 #PBS -e logs/${PBS_JOBNAME}.e${PBS_JOBID}.err
 cd $PBS_O_WORKDIR
@@ -17,7 +17,7 @@ do
   /usr/local/bin/plink --bfile 1000G_HCHS_geno_0.01_maf_0.05_ordered --chr ${i} --make-bed --out chr${i}
 
   #2. Phase w/ HAPI-UR
-  #for some reason on chr. 1 I can't get it abovw 49 markers
+  #rate-limiting step
   /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p chr${i} -w 256 -o phase_chr${i}
 
   #3. Make additional files for RFMix input
@@ -27,11 +27,10 @@ done
 
 for i in {1..22};
 do
-  #4. Run RFMix (takes very long time)
+  #4. Run RFMix
+  #rate-limiting step
   cd /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/
   python RunRFMix.py -e 2 -w 0.2 --num-threads 40 --use-reference-panels-in-EM --forward-backward PopPhased /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/phase_chr${i}.phgeno /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/HCHS.classes /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/phase_chr${i}.snp_locations -o /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/phase_chr${i}.rfmix
-  #why do all the chromosomes look identical across all the people
 done
-
 
 #will take many days, check up again when classes start
