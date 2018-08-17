@@ -30,6 +30,7 @@ for i in {1..22};
 do
   #4. Run RFMix
   #rate-limiting step
+  #RUNNING INTO MEMORY ISSUES
   cd /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/
   python RunRFMix.py \
   -e 2 \
