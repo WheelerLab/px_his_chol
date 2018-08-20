@@ -18,8 +18,9 @@ do
 
   #2. Phase w/ HAPI-UR
   #rate-limiting step
-  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p chr${i} -w 256 -o phase_chr${i}
-  #Chromosome 22 (23754 variants and 12477 people) took 34552.859 seconds in HAPI-UR
+  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p chr${i} -w 64 -o phase_chr${i}
+  #Having a larger window size causes an error (13:00, 8/20/18); attempting all chr. w/ -w 64 for now
+  #Chromosome 22 (23754 variants and 12477 people, w = 256) took 34552.859 seconds in HAPI-UR
 
   #3. Make additional files for RFMix input
   awk '{print $3}' phase_chr${i}.phsnp > phase_chr${i}.snp_locations
@@ -31,6 +32,7 @@ do
   #4. Run RFMix
   #rate-limiting step
   #RUNNING INTO MEMORY ISSUES
+    #As of 8/20/18, writing pipeline to cut each input into say 100 HCHS ind. each
   cd /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/
   python RunRFMix.py \
   -e 2 \
