@@ -51,3 +51,5 @@ do
   mkdir -p MOSAIC_PLOTS
   /usr/bin/Rscript /home/angela/px_his_chol/MOSAIC/mosaic.R HCHS /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/ -a 3 -n 24000 -c ${i}:${i}
 done
+
+#how in the world do you read MOSAIC output
