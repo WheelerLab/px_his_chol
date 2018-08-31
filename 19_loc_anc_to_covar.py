@@ -164,7 +164,7 @@ for ind in ind_list:
 
 #write file
 study_SNPs_t = study_SNPs.transpose()
-study_SNPs_t.to_csv(output_prefix + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False)
+study_SNPs_t.to_csv(output_prefix + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False, header = False)
 print("Completed writing SNP ancestry covariate file. Have a nice day!")
     #there's a better way to format this but I can't put my finger on it
 
