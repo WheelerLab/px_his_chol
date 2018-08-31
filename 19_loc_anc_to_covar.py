@@ -1,3 +1,4 @@
+#SEE ERROR ON LINE 99
 #"imputes" local ancestry between markers to use local ancestry as a covariate in GEMMA on a SNP-by-SNP basis
 #probably run once per chromosome?
 
@@ -14,7 +15,7 @@ import argparse
 #parser.add_argument("--sig_gene_SNPs", type = str, action = "store", dest = "sig_SNP_genes", required = True, help = "List of genes to prune the list of SNPs around (1 Mb before and after)")
 #args = parser.parse_args()
 
-print("Reading input file.")
+print("Reading input files.")
 #local_anc = pd.read_csv(args.loc_anc)
 #snpfile = pd.read_table(args.snpfile)
 #chr = args.chr
@@ -23,6 +24,7 @@ print("Reading input file.")
 local_anc = pd.read_csv("loc_anc.csv", dtype={'bp':float}, engine='python')
 snpfile = pd.read_table("snpfile.22", delim_whitespace = True, header = None)
 chr = 22
+output_prefix = "test_100_ind"
 
 local_anc = local_anc.loc[local_anc['p'] > 0.9] #keep ancestry probabilities > 0.9
 local_anc = local_anc[['bp', 'haplotype', 'anc']]
@@ -82,7 +84,8 @@ keep_local_anc.columns = ['bp']
 keep_local_anc = keep_local_anc.merge(local_anc, on = 'bp', how = 'left')
 keep_local_anc['bp'] = keep_local_anc['bp'].astype(float)
 keep_local_anc['anc'] = keep_local_anc['anc'].astype('category')
-print("Kept " + str(len(keep_local_anc)) + " SNPs from an original " + str(len(test_local_anc_SNPs)) + " SNPs in the local ancestry file.")
+#this below print statement is wrong, make it less stupid
+#print("Kept " + str(len(keep_local_anc)) + " SNPs from an original " + str(len(test_local_anc_SNPs)) + " SNPs in the local ancestry file.")
 
 #impute SNPs
 #subset haplotypes seperately then append to new master list?
@@ -95,6 +98,7 @@ for hap in hap_list:
             ind_haplotype.append(keep_local_anc_row)
     hap_df = pd.DataFrame(ind_haplotype)
     hap_df = hap_df.drop('Index', axis = 1)
+    #ERROR OCCURS HERE BECAUSE OF AN EMPTY LIST SOMEWHERE
     
     #impute ancestry for SNPs
     hap_SNP = pd.concat([hap_df, keep_SNP]).sort_values('bp')
@@ -134,6 +138,7 @@ for ind in ind_list:
     #first col is NAT, second is IBS, and third is YRI
     anc_dosage = []
     for ind_anc_row in ind_anc.itertuples():
+        #should I insert intercept?
         if ind_anc_row[1] == "NAT" and ind_anc_row[2] == "NAT":
             anc_dosage.append([ind_anc_row[0], "2\t0\t0"]) #both NAT
         elif ind_anc_row[1] == "IBS" and ind_anc_row[2] == "IBS":
@@ -158,9 +163,11 @@ for ind in ind_list:
     study_SNPs.reset_index(inplace = True)
 
 #write file
+study_SNPs_t = study_SNPs.transpose()
+study_SNPs_t.to_csv(output_prefix + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False)
 print("Completed writing SNP ancestry covariate file. Have a nice day!")
     #there's a better way to format this but I can't put my finger on it
 
 #from here, parse on a SNP-by-SNP basis for each GEMMA run
 #when running GEMMA, run a cocurrent python script that pulls the relevant information from study_SNPs
-   
+    
