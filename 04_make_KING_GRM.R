@@ -1,3 +1,4 @@
+#DEFUNCT USE 13_make_KING.R
 #makes GEMMA-style GRM using KING output
 #before running this, make king.kin0 and king.kn using KING
 library(GENESIS)
