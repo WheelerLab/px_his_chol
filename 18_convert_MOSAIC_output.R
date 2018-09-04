@@ -13,7 +13,7 @@ g_loc <- tibble::rownames_to_column(as.data.frame(g.loc), "Var3")
 g_loc$Var3 <- as.integer(g_loc$Var3)
 loc_anc <- dplyr::left_join(df, g_loc)
 loc_anc$Var3 <- NULL
-colnames(loc_anc) <- c("ancestry", "haplotype_num", "p", "bp")
+colnames(loc_anc) <- c("ancestry", "haplotype_num", "prob", "bp")
 phind <- fread("/home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/HCHS_chr22.phind", header = F)
 phind <- phind %>% dplyr::select(V1)
 colnames(phind) <- "haplotype"
