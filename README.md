@@ -7,7 +7,7 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 03_pred_exp_to_GEMMA_input.R: converts predicted expression (PrediXcan output) to GEMMA "genotype" input
 
-04_make_KING_GRM.R: makes GEMMA-style GRM using KING output
+04_make_KING_GRM.R: defunct, use 13_make_KING.R
 
 05_sig_genes_GEMMA_pred_exp.R: finds most significant genes (both FDR < 0.05 and p < bonferroni correction) from GEMMA predicted expression LMM output
 
