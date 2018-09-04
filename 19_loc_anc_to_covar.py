@@ -1,49 +1,48 @@
-#SEE ERROR ON LINE 99
 #"imputes" local ancestry between markers to use local ancestry as a covariate in GEMMA on a SNP-by-SNP basis
 #probably run once per chromosome?
 
-import pandas as pd
 import argparse
-#should I make a three dimensional array or is that too ambitious
+from numpy import loadtxt
+import pandas as pd
 
 #unnote when out of testing
 #parser = argparse.ArgumentParser()
 #parser.add_argument("--loc_anc", type = str, action = "store", dest = "loc_anc", required = True, help = "Path to file containing local ancestry converted from MOSAIC")
-#parser.add_argument("--output_prefix", type = str, action = "store", dest = "output_prefix", required = True, help = "Prefix for 'imputed' ancestry file")
+#parser.add_argument("--output_prefix", type = str, action = "store", dest = "output_prefix", required = False, default = "MOSAIC_for_GEMMA", help = "Prefix for 'imputed' ancestry file")
 #parser.add_argument("--snpfile", type = str, action = "store", dest = "snpfile", required = True, help = "Path to snpfile used in HAPI-UR")
 #parser.add_argument("--chr", type = int, action = "store", dest = "chr", required = True, help = "Chromosome under analysis")
 #parser.add_argument("--sig_gene_SNPs", type = str, action = "store", dest = "sig_SNP_genes", required = True, help = "List of genes to prune the list of SNPs around (1 Mb before and after)")
 #args = parser.parse_args()
 
 print("Reading input files.")
-#local_anc = pd.read_csv(args.loc_anc)
+#local_anc = pd.read_csv(args.loc_anc, dtype={'bp':float}, engine='python')
 #snpfile = pd.read_table(args.snpfile)
+#output_prefix = args.output_prefix
 #chr = args.chr
+#sig_genes = loadtxt("args.sig_SNP_genes", delimiter=",", unpack=False)
 
 #testing files
 local_anc = pd.read_csv("loc_anc.csv", dtype={'bp':float}, engine='python')
 snpfile = pd.read_table("snpfile.22", delim_whitespace = True, header = None)
 chr = 22
 output_prefix = "test_100_ind"
+sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]  
 
+#local_anc = local_anc.loc[local_anc['prob'] > 0.9] #keep ancestry probabilities > 0.9
 local_anc = local_anc.loc[local_anc['p'] > 0.9] #keep ancestry probabilities > 0.9
 local_anc = local_anc[['bp', 'haplotype', 'anc']]
 snpfile.columns = ['rs', 'chr', 'cM', 'bp', 'A1', 'A2']
 snpfile = snpfile[['rs', 'bp']]
 hap_list = local_anc['haplotype'].unique() #keep one of each hap
+
+#or input fam file used to make GEMMA and go from there?
 ind_list = []
 for hap in hap_list:
     ind_list.append(hap[:-2])
 ind_list = sorted(set(ind_list), key=ind_list.index) #remove duplicates but preserve order
+
 gene_start_end = pd.read_csv("gene_start_end.csv")
 gene_start_end_chr = gene_start_end.loc[gene_start_end['chr'] == chr] #subset genes to only relevant chr
-
-#PRUNING TO RELEVENT SNPs
-#with open(args.sig_SNP_genes) as f:
-#    sig_genes = f.readlines()
-        
-#FOR TESTING
-sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]        
 
 #prune gene_start_end_chr to just sig_genes
 keep_gene_start_end = []
@@ -84,11 +83,8 @@ keep_local_anc.columns = ['bp']
 keep_local_anc = keep_local_anc.merge(local_anc, on = 'bp', how = 'left')
 keep_local_anc['bp'] = keep_local_anc['bp'].astype(float)
 keep_local_anc['anc'] = keep_local_anc['anc'].astype('category')
-#this below print statement is wrong, make it less stupid
-#print("Kept " + str(len(keep_local_anc)) + " SNPs from an original " + str(len(test_local_anc_SNPs)) + " SNPs in the local ancestry file.")
 
-#impute SNPs
-#subset haplotypes seperately then append to new master list?
+#impute SNPs using .ffill()
 print("Starting SNP ancestry imputation.")
 imputed_haplotypes = pd.DataFrame(columns=['anc', 'bp', 'haplotype', 'rs'])
 for hap in hap_list:
@@ -97,21 +93,23 @@ for hap in hap_list:
         if hap == keep_local_anc_row[2]:
             ind_haplotype.append(keep_local_anc_row)
     hap_df = pd.DataFrame(ind_haplotype)
+    if hap_df.empty: #remove from ind_list to prevent further issues
+        print(hap + " is empty. Skipping haplotype and removing individual from further analyses.")
+        ind = hap[:-2]
+        ind_list.remove(ind)        
+        continue
     hap_df = hap_df.drop('Index', axis = 1)
-    #ERROR OCCURS HERE BECAUSE OF AN EMPTY LIST SOMEWHERE
     
     #impute ancestry for SNPs
     hap_SNP = pd.concat([hap_df, keep_SNP]).sort_values('bp')
     hap_SNP['haplotype'] = hap
-    hap_SNP['anc'] = hap_SNP['anc'].interpolate(method='pad') #fills NA with the closest value before
+    hap_SNP['anc'] = hap_SNP['anc'].ffill().bfill() #fills NA with the closest value before and after
+        #try to keep it NA in between flips? but I don't know of a method that does that
 
     #remove non- SNPs
     hap_SNP = hap_SNP.dropna(how = 'any', axis = 0)
     imputed_haplotypes = imputed_haplotypes.append(hap_SNP)
-print("SNP ancestry imputation complete.")
-
-#final output "for this SNP (one row) this one person has: 0 NAT, 1 IBS, and 1 YRI" (so should each person get three columns?)
-    #go from 2 haplotypes -> 1 person
+print("Haplotype ancestry imputation complete.")
 
 #make covariate file SNP by SNP
 print("Starting SNP ancestry covariate file.")
@@ -119,6 +117,7 @@ study_SNPs = pd.DataFrame(imputed_haplotypes['rs'].unique())
 study_SNPs.columns = ['rs']
 
 for ind in ind_list:
+    #collapse haplotype into one individual
     ind_anc_A = [] #haplotype 1
     ind_anc_B = [] #haplotype 2
     for imputed_haplotypes_row in imputed_haplotypes.itertuples():
@@ -164,10 +163,14 @@ for ind in ind_list:
 
 #write file
 study_SNPs_t = study_SNPs.transpose()
+study_SNPs_t.index.name = 'rs'
+study_SNPs_t.reset_index(inplace = True)
+study_SNPs_t = study_SNPs_t.set_value(0, 'rs', '')
 study_SNPs_t.to_csv(output_prefix + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False, header = False)
 print("Completed writing SNP ancestry covariate file. Have a nice day!")
     #there's a better way to format this but I can't put my finger on it
 
 #from here, parse on a SNP-by-SNP basis for each GEMMA run
 #when running GEMMA, run a cocurrent python script that pulls the relevant information from study_SNPs
+    #loop through to append to a file while deleting intermediate files
     
