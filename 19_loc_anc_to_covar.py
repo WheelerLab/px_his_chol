@@ -2,31 +2,31 @@
 #probably run once per chromosome?
 
 import argparse
-from numpy import loadtxt
+import numpy as np
 import pandas as pd
 
 #unnote when out of testing
-#parser = argparse.ArgumentParser()
-#parser.add_argument("--loc_anc", type = str, action = "store", dest = "loc_anc", required = True, help = "Path to file containing local ancestry converted from MOSAIC")
-#parser.add_argument("--output_prefix", type = str, action = "store", dest = "output_prefix", required = False, default = "MOSAIC_for_GEMMA", help = "Prefix for 'imputed' ancestry file")
-#parser.add_argument("--snpfile", type = str, action = "store", dest = "snpfile", required = True, help = "Path to snpfile used in HAPI-UR")
-#parser.add_argument("--chr", type = int, action = "store", dest = "chr", required = True, help = "Chromosome under analysis")
-#parser.add_argument("--sig_gene_SNPs", type = str, action = "store", dest = "sig_SNP_genes", required = True, help = "List of genes to prune the list of SNPs around (1 Mb before and after)")
-#args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument("--loc_anc", type = str, action = "store", dest = "loc_anc", required = True, help = "Path to file containing local ancestry converted from MOSAIC")
+parser.add_argument("--output_prefix", type = str, action = "store", dest = "output_prefix", required = False, default = "MOSAIC_for_GEMMA", help = "Prefix for 'imputed' ancestry file")
+parser.add_argument("--snpfile", type = str, action = "store", dest = "snpfile", required = True, help = "Path to snpfile used in HAPI-UR")
+parser.add_argument("--chr", type = int, action = "store", dest = "chr", required = True, help = "Chromosome under analysis")
+parser.add_argument("--sig_genes", type = str, action = "store", dest = "sig_genes", required = True, help = "List of genes to prune the list of SNPs around (1 Mb before and after)")
+args = parser.parse_args()
 
 print("Reading input files.")
-#local_anc = pd.read_csv(args.loc_anc, dtype={'bp':float}, engine='python')
-#snpfile = pd.read_table(args.snpfile)
-#output_prefix = args.output_prefix
-#chr = args.chr
-#sig_genes = loadtxt("args.sig_SNP_genes", delimiter=",", unpack=False)
+local_anc = pd.read_csv(args.loc_anc, dtype={'bp':float})#, engine='python')
+snpfile = pd.read_table(args.snpfile, delim_whitespace = True, header = None)
+output_prefix = args.output_prefix
+chr = args.chr
+sig_genes = np.loadtxt(args.sig_genes, dtype = 'string')
 
 #testing files
-local_anc = pd.read_csv("loc_anc.csv", dtype={'bp':float}, engine='python')
-snpfile = pd.read_table("snpfile.22", delim_whitespace = True, header = None)
-chr = 22
-output_prefix = "test_100_ind"
-sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]  
+#local_anc = pd.read_csv("loc_anc.csv", dtype={'bp':float}, engine='python')
+#snpfile = pd.read_table("snpfile.22", delim_whitespace = True, header = None)
+#chr = 22
+#output_prefix = "test_100_ind"
+#sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]  
 
 #local_anc = local_anc.loc[local_anc['prob'] > 0.9] #keep ancestry probabilities > 0.9
 local_anc = local_anc.loc[local_anc['p'] > 0.9] #keep ancestry probabilities > 0.9
@@ -139,17 +139,17 @@ for ind in ind_list:
     for ind_anc_row in ind_anc.itertuples():
         #should I insert intercept?
         if ind_anc_row[1] == "NAT" and ind_anc_row[2] == "NAT":
-            anc_dosage.append([ind_anc_row[0], "2\t0\t0"]) #both NAT
+            anc_dosage.append([ind_anc_row[0], "2.0\t0.0\t0.0"]) #both NAT
         elif ind_anc_row[1] == "IBS" and ind_anc_row[2] == "IBS":
-            anc_dosage.append([ind_anc_row[0], "0\t2\t0"]) #both IBS
+            anc_dosage.append([ind_anc_row[0], "0.0\t2.0\t0.0"]) #both IBS
         elif ind_anc_row[1] == "YRI" and ind_anc_row[2] == "YRI":
-            anc_dosage.append([ind_anc_row[0], "0\t0\t2"]) #both YRI
+            anc_dosage.append([ind_anc_row[0], "0.0\t0.0\t2.0"]) #both YRI
         elif (ind_anc_row[1] == "NAT" and ind_anc_row[2] == "IBS") or (ind_anc_row[1] == "IBS" and ind_anc_row[2] == "NAT"):
-            anc_dosage.append([ind_anc_row[0], "1\t1\t0"]) #one NAT, one IBS
+            anc_dosage.append([ind_anc_row[0], "1.0\t1.0\t0.0"]) #one NAT, one IBS
         elif (ind_anc_row[1] == "NAT" and ind_anc_row[2] == "YRI") or (ind_anc_row[1] == "YRI" and ind_anc_row[2] == "NAT"): 
-            anc_dosage.append([ind_anc_row[0], "1\t0\t1"]) #one NAT, one YRI
+            anc_dosage.append([ind_anc_row[0], "1.0\t0.0\t1.0"]) #one NAT, one YRI
         elif (ind_anc_row[1] == "YRI" and ind_anc_row[2] == "IBS") or (ind_anc_row[1] == "IBS" and ind_anc_row[2] == "YRI"):
-            anc_dosage.append([ind_anc_row[0], "0\t1\t1"]) #one IBS, one YRI  
+            anc_dosage.append([ind_anc_row[0], "0.0\t1.0\t1.0"]) #one IBS, one YRI  
         else:
             anc_dosage.append([ind_anc_row[0], "NA\tNA\tNA"]) #who knows
             #now how to I translate this back into GEMMA for a SNP on SNP basis
@@ -161,13 +161,16 @@ for ind in ind_list:
     study_SNPs.index.name = 'rs'
     study_SNPs.reset_index(inplace = True)
 
+#write list of SNPs to use in GEMMA (-snps)
+study_SNPs.rs.to_csv(output_prefix + "_" + str(chr) + "_snps.txt", index = False, header = False)
+
 #write file
 study_SNPs_t = study_SNPs.transpose()
 study_SNPs_t.index.name = 'rs'
 study_SNPs_t.reset_index(inplace = True)
 study_SNPs_t = study_SNPs_t.set_value(0, 'rs', '')
-study_SNPs_t.to_csv(output_prefix + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False, header = False)
-print("Completed writing SNP ancestry covariate file. Have a nice day!")
+study_SNPs_t.to_csv(output_prefix + "_" + str(chr) + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False, header = False)
+print("Completed writing SNP and SNP ancestry covariate file to " + output_prefix + "_" + str(chr) + "_snps.txt and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
     #there's a better way to format this but I can't put my finger on it
 
 #from here, parse on a SNP-by-SNP basis for each GEMMA run
