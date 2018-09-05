@@ -3,7 +3,7 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 01_PrediXcan_dosages_to_GEMMA_BIMBAM.py: defunct, see 02_PrediXcan_dosages_to_GEMMA.py
 
-02_PrediXcan_dosages_to_GEMMA_anno.py: takes information from PrediXcan-style dosages to make SNP annotation files for GEMMA
+02_PrediXcan_dosages_to_GEMMA_anno.py: takes information from PrediXcan-style dosages to make SNP annotation and BIMBAM files for GEMMA
 
 03_pred_exp_to_GEMMA_input.R: converts predicted expression (PrediXcan output) to GEMMA "genotype" input
 
