@@ -1,11 +1,4 @@
-#Script converts PrediXcan-style dosages (from UMich_vcf2px.py or Sanger_vcf2px.py) to BIMBAM style used in GEMMA
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 22 11:04:34 2018
-
-@author: Angela
-"""
-
+#defunct, see 02_PrediXcan_dosages_to_GEMMA.py
 import gzip
 dosage_path = "/home/angela/px_his_chol/Imputation/UMich/UMich_dosages/"
 BIMBAM_path = "/home/angela/px_his_chol/GEMMA/BIMBAM/"
