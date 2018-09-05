@@ -11,7 +11,7 @@ parser.add_argument("--loc_anc", type = str, action = "store", dest = "loc_anc",
 parser.add_argument("--output_prefix", type = str, action = "store", dest = "output_prefix", required = False, default = "MOSAIC_for_GEMMA", help = "Prefix for 'imputed' ancestry file")
 parser.add_argument("--snpfile", type = str, action = "store", dest = "snpfile", required = True, help = "Path to snpfile used in HAPI-UR")
 parser.add_argument("--chr", type = int, action = "store", dest = "chr", required = True, help = "Chromosome under analysis")
-parser.add_argument("--sig_genes", type = str, action = "store", dest = "sig_genes", required = True, help = "List of genes to prune the list of SNPs around (1 Mb before and after)")
+parser.add_argument("--sig_genes", type = str, action = "store", dest = "sig_genes", required = False, help = "List of genes to prune the list of SNPs around (1 Mb before and after)")
 args = parser.parse_args()
 
 print("Reading input files.")
@@ -19,7 +19,11 @@ local_anc = pd.read_csv(args.loc_anc, dtype={'bp':float})#, engine='python')
 snpfile = pd.read_table(args.snpfile, delim_whitespace = True, header = None)
 output_prefix = args.output_prefix
 chr = args.chr
-sig_genes = np.loadtxt(args.sig_genes, dtype = 'string')
+if args.sig_genes is None:
+    sig_genes = [] #keep all SNPs. SIGNIFICANTLY SLOWER.
+    print("No significant gene file called, so program will be keeping all SNPs and will be significantly slowed.")
+else:
+    sig_genes = np.loadtxt(args.sig_genes, dtype = 'string')
 
 #testing files
 #local_anc = pd.read_csv("loc_anc.csv", dtype={'bp':float}, engine='python')
@@ -46,38 +50,56 @@ gene_start_end_chr = gene_start_end.loc[gene_start_end['chr'] == chr] #subset ge
 
 #prune gene_start_end_chr to just sig_genes
 keep_gene_start_end = []
-for gene_start_end_chr_row in gene_start_end_chr.itertuples():
-    if gene_start_end_chr_row[3] in sig_genes:
+if len(sig_genes) == 0:
+    for gene_start_end_chr_row in gene_start_end_chr.itertuples():
         keep_gene_start_end.append(list(gene_start_end_chr_row))
-keep_gene_start_end = pd.DataFrame(keep_gene_start_end)
-if keep_gene_start_end.empty:
-    print("There are no significant genes on chr. " + str(chr) + ". Exiting program now.")
-    exit()
+        keep_gene_start_end = pd.DataFrame(keep_gene_start_end)
+    print("Kept all genes on chr. " + str(chr) + ".")
+    keep_gene_start_end.columns = ['index', 'chr', 'gene', 'gene_name', 'start', 'end']
+    keep_gene_start_end = keep_gene_start_end.drop('index', axis=1).drop('gene', axis=1).drop('chr', axis=1)
 else:
+    for gene_start_end_chr_row in gene_start_end_chr.itertuples():
+        if gene_start_end_chr_row[3] in sig_genes:
+            keep_gene_start_end.append(list(gene_start_end_chr_row))
+    keep_gene_start_end = pd.DataFrame(keep_gene_start_end)
     print("Kept the " + str(len(keep_gene_start_end.index)) + " significant genes on chr. " + str(chr) + ".")
-keep_gene_start_end.columns = ['index', 'chr', 'gene', 'gene_name', 'start', 'end']
-keep_gene_start_end = keep_gene_start_end.drop('index', axis=1).drop('gene', axis=1).drop('chr', axis=1)
+    keep_gene_start_end.columns = ['index', 'chr', 'gene', 'gene_name', 'start', 'end']
+    keep_gene_start_end = keep_gene_start_end.drop('index', axis=1).drop('gene', axis=1).drop('chr', axis=1)
     
 #keep SNPs in snpfile only if they are w/in 1 Mb of start/end of sig genes
 keep_SNP = []
 test_SNPs_snpfile = set(snpfile['bp'].tolist()) #is this faster than having nested loops for a dataframe?
-for SNP in iter(test_SNPs_snpfile):
-    for keep_gene_start_end_row in keep_gene_start_end.itertuples():
-        if (SNP > (keep_gene_start_end_row[2] - 1000000)) and (SNP < (keep_gene_start_end_row[3] + 1000000)): #if base pair of known SNP is w/in 1 Mb of start or end of gene
+if len(sig_genes) == 0:
+    for SNP in iter(test_SNPs_snpfile):
+        for keep_gene_start_end_row in keep_gene_start_end.itertuples():
             keep_SNP.append(SNP)
-keep_SNP = pd.DataFrame(keep_SNP)
-keep_SNP.columns = ['bp']
-keep_SNP = keep_SNP.merge(snpfile, on = 'bp', how = 'left')
-print("Kept " + str(len(keep_SNP)) + " SNPs from an original " + str(len(snpfile)) + " SNPs from the snpfile.") 
+    keep_SNP = pd.DataFrame(keep_SNP)
+    keep_SNP.columns = ['bp']
+    keep_SNP = keep_SNP.merge(snpfile, on = 'bp', how = 'left')
+    print("Kept all SNPs from an original " + str(len(snpfile)) + " SNPs from the snpfile.") 
+else:
+    for SNP in iter(test_SNPs_snpfile):
+        for keep_gene_start_end_row in keep_gene_start_end.itertuples():
+            if (SNP > (keep_gene_start_end_row[2] - 1000000)) and (SNP < (keep_gene_start_end_row[3] + 1000000)): #if base pair of known SNP is w/in 1 Mb of start or end of gene
+                keep_SNP.append(SNP)
+    keep_SNP = pd.DataFrame(keep_SNP)
+    keep_SNP.columns = ['bp']
+    keep_SNP = keep_SNP.merge(snpfile, on = 'bp', how = 'left')
+    print("Kept " + str(len(keep_SNP)) + " SNPs from an original " + str(len(snpfile)) + " SNPs from the snpfile.") 
 
 #prune local_anc to relevant SNPs (this wasn't very useful in the example data)
 #make local anc row bps into a set for speed
 keep_local_anc = []
 test_local_anc_SNPs = set(local_anc['bp'].tolist()) #for speed purposes only
-for SNP in iter(test_local_anc_SNPs):
-    for keep_gene_start_end_row in keep_gene_start_end.itertuples():
-        if (SNP > (keep_gene_start_end_row[2] - 1000000)) and (SNP < (keep_gene_start_end_row[3] + 1000000)): #if base pair of MOSAIC SNP is w/in 1 Mb of start or end of gene
+if len(sig_genes) == 0:
+    for SNP in iter(test_local_anc_SNPs):
+        for keep_gene_start_end_row in keep_gene_start_end.itertuples():
             keep_local_anc.append(SNP)
+else:
+    for SNP in iter(test_local_anc_SNPs):
+        for keep_gene_start_end_row in keep_gene_start_end.itertuples():
+            if (SNP > (keep_gene_start_end_row[2] - 1000000)) and (SNP < (keep_gene_start_end_row[3] + 1000000)): #if base pair of MOSAIC SNP is w/in 1 Mb of start or end of gene
+                keep_local_anc.append(SNP)
 keep_local_anc = pd.DataFrame(keep_local_anc)
 keep_local_anc.columns = ['bp']
 keep_local_anc = keep_local_anc.merge(local_anc, on = 'bp', how = 'left')
@@ -106,7 +128,7 @@ for hap in hap_list:
     hap_SNP['anc'] = hap_SNP['anc'].ffill().bfill() #fills NA with the closest value before and after
         #try to keep it NA in between flips? but I don't know of a method that does that
 
-    #remove non- SNPs
+    #remove non-SNPs
     hap_SNP = hap_SNP.dropna(how = 'any', axis = 0)
     imputed_haplotypes = imputed_haplotypes.append(hap_SNP)
 print("Haplotype ancestry imputation complete.")
@@ -116,8 +138,8 @@ print("Starting SNP ancestry covariate file.")
 study_SNPs = pd.DataFrame(imputed_haplotypes['rs'].unique())
 study_SNPs.columns = ['rs']
 
+#collapse haplotype into one individual
 for ind in ind_list:
-    #collapse haplotype into one individual
     ind_anc_A = [] #haplotype 1
     ind_anc_B = [] #haplotype 2
     for imputed_haplotypes_row in imputed_haplotypes.itertuples():
