@@ -5,8 +5,8 @@ import pandas as pd
 import subprocess
 pd.options.mode.chained_assignment = None
 
-#mount = ""
-mount = "/home/angela"
+mount = ""
+#mount = "/home/angela"
 
 '''
 parser = argparse.ArgumentParser()
@@ -85,7 +85,11 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
         #estimates need to be split b/c .to_csv doesn't like when they're not
         SNP_cov['NAT'], SNP_cov['IBS'], SNP_cov['YRI'] = SNP_cov[SNP].str.split('\t', 2).str
         SNP_cov = SNP_cov.drop(SNP, axis = 1)
-        
+        #SNP_cov.dtypes
+        SNP_cov['NAT'] = SNP_cov['NAT'].astype(float)
+        SNP_cov['IBS'] = SNP_cov['IBS'].astype(float)
+        SNP_cov['YRI'] = SNP_cov['YRI'].astype(float)
+
         #tmp files
         SNP_name = open("tmp_SNP.txt", "w")
         SNP_name.write(SNP) #take argument -SNPs to specify SNPs to study
@@ -94,7 +98,7 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
         
         #run GEMMA
         GEMMA_command = "/usr/local/bin/gemma -g " + BIMBAM + " -p " + pheno_file + " -n " + str(pheno_num) + " -a " + anno + " -k " + relatedness + " -c tmp_SNP_cov.txt -snps tmp_SNP.txt -lmm 4 -o tmp_output"
-        subprocess.Popen(GEMMA_command)
+        #HOORAY A DIFFERENT ERROR
         
         #append output to phenotype file
         
@@ -102,3 +106,4 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
         
     pheno_results.close()
             
+    
