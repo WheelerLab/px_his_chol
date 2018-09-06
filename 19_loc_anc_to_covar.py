@@ -190,7 +190,7 @@ study_SNPs.rs.to_csv(output_prefix + "_" + str(chr) + "_snps.txt", index = False
 study_SNPs_t = study_SNPs.transpose()
 study_SNPs_t.index.name = 'rs'
 study_SNPs_t.reset_index(inplace = True)
-study_SNPs_t = study_SNPs_t.set_value(0, 'rs', '')
+study_SNPs_t = study_SNPs_t.set_value(0, 'rs', 'IID')
 study_SNPs_t.to_csv(output_prefix + "_" + str(chr) + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False, header = False)
 print("Completed writing SNP and SNP ancestry covariate file to " + output_prefix + "_" + str(chr) + "_snps.txt and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
     #there's a better way to format this but I can't put my finger on it
