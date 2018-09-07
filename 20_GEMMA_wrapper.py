@@ -1,5 +1,6 @@
 #wrapper for SNP-by-SNP level GEMMA
 import argparse
+import gzip
 import numpy as np
 import pandas as pd
 import subprocess
@@ -10,26 +11,21 @@ mount = ""
 
 '''
 parser = argparse.ArgumentParser()
-
 #novel-ish part of using GEMMA
 parser.add_argument("--snplist", type = str, action = "store", dest = "snplist", required = True, help = "Path to file containing a list of SNPs to be included in analysis.")
 parser.add_argument("--snptable", type = str, action = "store", dest = "snptable", required = True, help = "Path to file containing the .csv output of 19_loc_anc_to_covar.py")
 parser.add_argument("--region", type = str, action = "store", dest = "region", required = True, help = "Path to file containing region information.")
-
 #established part of using GEMMA
 parser.add_argument("--BIMBAM", type = str, action = "store", dest = "BIMBAM", required = True, help = "Path to file with BIMBAM-formatted genotypes.")
 parser.add_argument("--anno", type = str, action = "store", dest = "anno", required = True, help = "Path to file containing the annotations.")
 parser.add_argument("--pheno", type = str, action = "store", dest = "pheno", required = True, help = "Path to file containing phenotypic information.")
 parser.add_argument("--relatedness", type = str, action = "store", dest = "relatedness", required = True, help = "Path to file containing relatedness matrix w/o IIDs.")
 parser.add_argument("--output", type = str, action = "store", dest = "output", required = False, help = "Name of output file")
-
 args = parser.parse_args()
-
 print("Reading input files.")
 SNPs = np.loadtxt(args.snplist, dtype = 'string')#, engine='python')
 loc_anc_cov = pd.read_csv(args.snptable, delimiter=',', encoding="utf-8-sig")
 region = pd.read_table(args.region, delim_whitespace = True, dtype = {'region':object})
-
 #following are just to be used in GEMMA input
 BIMBAM = args.BIMBAM
 anno = args.anno
@@ -37,15 +33,17 @@ pheno = args.pheno
 relatedness = args.relatedness
 '''
 
-#testing files
-SNPs = list(np.loadtxt(mount + "/px_his_chol/local_anc_GEMMA/test_100_ind/MOSAIC_for_GEMMA_22_snps.txt", dtype = 'string'))#, engine='python')
-loc_anc_cov = pd.read_csv(mount + "/px_his_chol/local_anc_GEMMA/test_100_ind/MOSAIC_for_GEMMA_22.csv", delimiter=',', encoding="utf-8-sig")
-region = pd.read_table(mount + "/px_his_chol/local_anc_GEMMA/test_100_ind/region.txt", delim_whitespace = True, dtype = {'region':object})
+BIMBAM_file = "BIMBAM/chr22.txt"
+anno = "anno/anno22.txt"
+pheno_file = "pheno_woIID.txt"
+relatedness = "relatedness_matrix_woIID_noNeg.txt"
 
-BIMBAM = mount + "/px_his_chol/local_anc_GEMMA/test_100_ind/BIMBAM/chr22.txt.gz"
-anno = mount + "/px_his_chol/local_anc_GEMMA/test_100_ind/anno/anno22.txt"
-pheno_file = mount + "/px_his_chol/local_anc_GEMMA/test_100_ind/pheno_woIID.txt"
-relatedness = mount + "/px_his_chol/local_anc_GEMMA/test_100_ind/relatedness_matrix_woIID.txt"
+#testing files
+SNPs = list(np.loadtxt("MOSAIC_for_GEMMA_22_snps.txt", dtype = 'string'))#, engine='python')
+loc_anc_cov = pd.read_csv("MOSAIC_for_GEMMA_22.csv", delimiter=',', encoding="utf-8-sig")
+region = pd.read_table("region.txt", delim_whitespace = True, dtype = {'region':object})
+BIMBAM = pd.read_table(BIMBAM_file, header = None)
+BIMBAM = BIMBAM.set_index(0)
 
 #remove FID from loc_anc_cov
 loc_anc_cov['IID'] = loc_anc_cov['IID'].str.replace(r'.*:', '')
@@ -70,13 +68,14 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     pheno_num = pheno[0]
     pheno_name_rank = pheno_name[0]
     
-    pheno_results = open(mount + "/px_his_chol/local_anc_GEMMA/test_100_ind/" + pheno_name_rank + ".txt", "w")
+    pheno_results = open(pheno_name_rank + ".txt", "w")
     pheno_results.write("chr\trs\tps\tn_miss\tallele1\tallele0\taf\tbeta\tse\tl_remle\tl_mle\tp_wald\tp_lrt\tp_score\n")
     
     #start SNP loop
     for SNP in SNPs:
         #testing
-        SNP = SNPs[0]
+        SNP = SNPs[2]
+        SNP = 'rs418652'
         
         #rebuild covariate file for each SNP
             #should be the same length as the number of people
@@ -96,14 +95,17 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
         SNP_name.close()
         SNP_cov.to_csv("tmp_SNP_cov.txt", sep = "\t", na_rep = "NA", header = False, index = False, float_format = '%.12g', quoting = 3)
         
-        #run GEMMA
-        GEMMA_command = "/usr/local/bin/gemma -g " + BIMBAM + " -p " + pheno_file + " -n " + str(pheno_num) + " -a " + anno + " -k " + relatedness + " -c tmp_SNP_cov.txt -snps tmp_SNP.txt -lmm 4 -o tmp_output"
-        #HOORAY A DIFFERENT ERROR
+        #-snp doesn't seem to be working. Pull SNP from BIMBAM file?
+        BIMBAM_to_write = BIMBAM.loc[[SNP], :]
+        BIMBAM_to_write.to_csv("tmp_BIMBAM.txt", sep = "\t", na_rep = "NA", header = False, index = True, float_format = '%.12g', quoting = 3)
         
+        #run GEMMA
+        GEMMA_command = "/usr/local/bin/gemma -g tmp_BIMBAM.txt -p " + pheno_file + " -n " + str(pheno_num) + " -a " + anno + " -k " + relatedness + " -c tmp_SNP_cov.txt -lmm 4 -notsnp -o tmp_output -miss 1 --maf 1 --r2 0"
+        subprocess.call([
+            'gemma', '-g', BIMBAM_file, '-p', pheno_file, '-n', str(pheno_num), '-a', anno, '-k', relatedness, '-c', 'tmp_SNP_cov.txt', '-snps', 'tmp_SNP.txt', '-lmm', str(4), '-o', 'tmp_output'
+        ])
         #append output to phenotype file
         
         #delete tmp files
         
     pheno_results.close()
-            
-    
