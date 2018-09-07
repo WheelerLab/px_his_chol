@@ -109,3 +109,4 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
         #delete tmp files
         
     pheno_results.close()
+    #write some sort of "this phenotype is done" message
