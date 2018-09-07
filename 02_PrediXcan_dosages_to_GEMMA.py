@@ -16,7 +16,8 @@ for i in range(1,23):
         arr = line.strip().split()
         (chr, rs, bp, A1, A2, MAF) = arr[0:6]
         if len(A1) < 2 and len(A2) < 2 and rs in PX_SNPs:
-            dosages = arr[7:] #skip problematic person #1
+            dosages = arr[6:] #skip problematic person
+            #dosages = arr[7:] #skip problematic person #1
             dosages_str = '\t'.join(dosages)
             BIMBAM_format = (rs + "\t" + A1 + "\t" + A2 + "\t" + dosages_str + "\n")
             BIMBAM.write(BIMBAM_format)
