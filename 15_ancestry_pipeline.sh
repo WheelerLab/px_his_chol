@@ -14,9 +14,9 @@ do
   mv NAT_chr${i}.phgeno NATgenofile.${i}
   printf ":sites:" > rates.${i}
   wc -l < NATgenofile.${i} >> rates.${i} #add number of sites
-  awk '{print $4}' NAT_chr${i}.phsnp | paste -sd ' ' >> rates.${i} #add row of positions
-  awk '{print $3}' NAT_chr${i}.phsnp | paste -sd ' ' >> rates.${i} #add row of cM
   mv NAT_chr${i}.phsnp snpfile.${i}
+  awk '{print $4}' snpfile.${i} | paste -sd ' ' >> rates.${i} #add row of positions
+  awk '{print $3}' snpfile.${i} | paste -sd ' ' >> rates.${i} #add row of cM
   
 ##IBS
   #4. Extract chr with PLINK
