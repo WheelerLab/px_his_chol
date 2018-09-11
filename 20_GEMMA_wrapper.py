@@ -68,7 +68,7 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     pheno_num = pheno[0]
     pheno_name_rank = pheno_name[0]
     
-    pheno_results = open(pheno_name_rank + ".txt", "w")
+    pheno_results = open(pheno_name_rank + "_results.txt", "w")
     pheno_results.write("chr\trs\tps\tn_miss\tallele1\tallele0\taf\tbeta\tse\tl_remle\tl_mle\tp_wald\tp_lrt\tp_score\n")
     
     #start SNP loop
