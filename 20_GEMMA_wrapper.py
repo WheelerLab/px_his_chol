@@ -33,7 +33,7 @@ pheno = args.pheno
 relatedness = args.relatedness
 '''
 
-BIMBAM_file = "BIMBAM/chr22.txt"
+BIMBAM_file = "BIMBAM/chr22.txt" #for some reason Python refused to use a zipped version
 anno = "anno/anno22.txt"
 pheno_file = "pheno_woIID.txt"
 relatedness = "relatedness_matrix_woIID_noNeg.txt"
