@@ -33,7 +33,7 @@ pheno = args.pheno
 relatedness = args.relatedness
 '''
 
-BIMBAM_file = "BIMBAM/chr22.txt" #for some reason Python refused to use a zipped version
+BIMBAM_file = "BIMBAM/chr22.txt"
 anno = "anno/anno22.txt"
 pheno_file = "pheno_woIID.txt"
 relatedness = "relatedness_matrix_woIID_noNeg.txt"
@@ -51,6 +51,7 @@ loc_anc_cov['IID'] = loc_anc_cov['IID'].str.replace(r'.*:', '')
 #clean up region and add intercept
 region.columns = ['IID', 'region']
 region['intercept'] = 1
+#region[]
 region = region[['IID', 'intercept', 'region']]
 
 #merge all covariates to be selectively pulled later
@@ -68,14 +69,12 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     pheno_num = pheno[0]
     pheno_name_rank = pheno_name[0]
     
-    pheno_results = open(pheno_name_rank + "_results.txt", "w")
-    pheno_results.write("chr\trs\tps\tn_miss\tallele1\tallele0\taf\tbeta\tse\tl_remle\tl_mle\tp_wald\tp_lrt\tp_score\n")
+    pheno_results = pd.DataFrame(columns=['chr', 'rs', 'ps', 'n_miss', 'allele1', 'allele0', 'af', 'beta', 'se', 'l_remle', 'l_mle', 'p_wald', 'p_lrt', 'p_score', 'anc'])
     
     #start SNP loop
     for SNP in SNPs:
         #testing
-        SNP = SNPs[2]
-        SNP = 'rs418652'
+        SNP = SNPs[0]
         
         #rebuild covariate file for each SNP
             #should be the same length as the number of people
@@ -84,29 +83,40 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
         #estimates need to be split b/c .to_csv doesn't like when they're not
         SNP_cov['NAT'], SNP_cov['IBS'], SNP_cov['YRI'] = SNP_cov[SNP].str.split('\t', 2).str
         SNP_cov = SNP_cov.drop(SNP, axis = 1)
-        #SNP_cov.dtypes
+        
         SNP_cov['NAT'] = SNP_cov['NAT'].astype(float)
         SNP_cov['IBS'] = SNP_cov['IBS'].astype(float)
         SNP_cov['YRI'] = SNP_cov['YRI'].astype(float)
+            #intercept region NAT IBS YRI
 
-        #tmp files
-        SNP_name = open("tmp_SNP.txt", "w")
-        SNP_name.write(SNP) #take argument -SNPs to specify SNPs to study
-        SNP_name.close()
-        SNP_cov.to_csv("tmp_SNP_cov.txt", sep = "\t", na_rep = "NA", header = False, index = False, float_format = '%.12g', quoting = 3)
+        for pop in ['NAT', 'IBS', 'YRI']: #because it doesn't work all at once
+            #try keeping one column
+            single_pop_cov = SNP_cov[['intercept', 'region', pop]]
+
+            #tmp files
+            SNP_name = open("tmp_SNP.txt", "w")
+            SNP_name.write(SNP) #take argument -SNPs to specify SNPs to study
+            SNP_name.close()
         
-        #-snp doesn't seem to be working. Pull SNP from BIMBAM file?
-        BIMBAM_to_write = BIMBAM.loc[[SNP], :]
-        BIMBAM_to_write.to_csv("tmp_BIMBAM.txt", sep = "\t", na_rep = "NA", header = False, index = True, float_format = '%.12g', quoting = 3)
+            #change float when necessary
+            single_pop_cov.to_csv("tmp_SNP_cov.txt", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format = '%.12g')
         
-        #run GEMMA
-        GEMMA_command = "/usr/local/bin/gemma -g tmp_BIMBAM.txt -p " + pheno_file + " -n " + str(pheno_num) + " -a " + anno + " -k " + relatedness + " -c tmp_SNP_cov.txt -lmm 4 -notsnp -o tmp_output -miss 1 --maf 1 --r2 0"
-        subprocess.call([
-            'gemma', '-g', BIMBAM_file, '-p', pheno_file, '-n', str(pheno_num), '-a', anno, '-k', relatedness, '-c', 'tmp_SNP_cov.txt', '-snps', 'tmp_SNP.txt', '-lmm', str(4), '-o', 'tmp_output'
-        ])
-        #append output to phenotype file
+            #-snp doesn't seem to be working. Pull SNP from BIMBAM file?
+            BIMBAM_to_write = BIMBAM.loc[[SNP], :]
+            BIMBAM_to_write.to_csv("tmp_BIMBAM.txt", sep = "\t", na_rep = "NA", header = False, index = True, float_format = '%.12g', quoting = 3)
         
-        #delete tmp files
+            #run GEMMA
+            GEMMA_command = "/usr/local/bin/gemma -g tmp_BIMBAM.txt -p " + pheno_file + " -n " + str(pheno_num) + " -a " + anno + " -k " + relatedness + " -c tmp_SNP_cov.txt -lmm 1 -notsnp -o tmp_output_" + pop
         
-    pheno_results.close()
-    #write some sort of "this phenotype is done" message
+            #learn how to use this
+            subprocess.call([
+                'gemma', '-g', BIMBAM_file, '-p', pheno_file, '-n', str(pheno_num), '-a', anno, '-k', relatedness, '-c', 'tmp_SNP_cov.txt', '-snps', 'tmp_SNP.txt', '-lmm', str(4), '-o', 'tmp_output'
+            ])
+    
+            #add to output file
+            GEMMA_output = pd.read_table("output/tmp_output_" + pop + ".assoc.txt", delim_whitespace = True)
+            GEMMA_output['anc'] = pop
+            pheno_results = pheno_results.append(GEMMA_output)
+
+    #write to results
+    pheno_results.to_csv(pheno_name_rank + "_results.txt", sep = "\t", na_rep = "NA", header = True, index = False, quoting = 3)
