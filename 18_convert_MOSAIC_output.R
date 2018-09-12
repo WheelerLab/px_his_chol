@@ -1,3 +1,5 @@
+#MAKE THIS MORE READABLE
+
 #converts local ancestry output from MOSAIC to a more human-readable format
 load("/home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/MOSAIC_RESULTS/localanc_HCHS_3way_1-100_22-22_684_60_0.99_100.RData")
 library(data.table)
