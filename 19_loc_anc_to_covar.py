@@ -127,6 +127,7 @@ for hap in hap_list:
     hap_SNP['haplotype'] = hap
     hap_SNP['anc'] = hap_SNP['anc'].ffill().bfill() #fills NA with the closest value before and after
         #try to keep it NA in between flips? but I don't know of a method that does that
+            #unless I write one I guess
 
     #remove non-SNPs
     hap_SNP = hap_SNP.dropna(how = 'any', axis = 0)
@@ -159,7 +160,6 @@ for ind in ind_list:
     #first col is NAT, second is IBS, and third is YRI
     anc_dosage = []
     for ind_anc_row in ind_anc.itertuples():
-        #should I insert intercept?
         if ind_anc_row[1] == "NAT" and ind_anc_row[2] == "NAT":
             anc_dosage.append([ind_anc_row[0], "2.0\t0.0\t0.0"]) #both NAT
         elif ind_anc_row[1] == "IBS" and ind_anc_row[2] == "IBS":
@@ -174,7 +174,6 @@ for ind in ind_list:
             anc_dosage.append([ind_anc_row[0], "0.0\t1.0\t1.0"]) #one IBS, one YRI  
         else:
             anc_dosage.append([ind_anc_row[0], "NA\tNA\tNA"]) #who knows
-            #now how to I translate this back into GEMMA for a SNP on SNP basis
     anc_dosage_df = pd.DataFrame(anc_dosage)
     anc_dosage_df.columns = ["rs", ind]
     study_SNPs = study_SNPs.set_index('rs').join(anc_dosage_df.set_index('rs'))
@@ -193,9 +192,6 @@ study_SNPs_t.reset_index(inplace = True)
 study_SNPs_t = study_SNPs_t.set_value(0, 'rs', 'IID')
 study_SNPs_t.to_csv(output_prefix + "_" + str(chr) + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False, header = False)
 print("Completed writing SNP and SNP ancestry covariate file to " + output_prefix + "_" + str(chr) + "_snps.txt and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
-    #there's a better way to format this but I can't put my finger on it
 
-#from here, parse on a SNP-by-SNP basis for each GEMMA run
-#when running GEMMA, run a cocurrent python script that pulls the relevant information from study_SNPs
-    #loop through to append to a file while deleting intermediate files
+#from here, parse on a SNP-by-SNP basis for each GEMMA run (see 20_GEMMA_wrapper.py)
     
