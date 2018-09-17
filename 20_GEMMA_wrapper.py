@@ -1,4 +1,5 @@
-#wrapper for SNP-by-SNP and ancestry-by-ancestry level GEMMA
+#wrapper for admixture mapping analysis in GEMMA
+#NOT UPDATED TO ADMIXTURE MAPPING AS OF 9/17/18
 import argparse
 import gzip
 import numpy as np
