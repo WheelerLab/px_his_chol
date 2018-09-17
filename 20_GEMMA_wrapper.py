@@ -1,5 +1,5 @@
-#wrapper for admixture mapping analysis in GEMMA
-#NOT UPDATED TO ADMIXTURE MAPPING AS OF 9/17/18
+#wrapper for SNP-by-SNP and ancestry-by-ancestry level GEMMA
+#GIVES WRONG RESULTS
 import argparse
 import gzip
 import numpy as np
