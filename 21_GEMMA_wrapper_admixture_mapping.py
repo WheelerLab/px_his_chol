@@ -5,10 +5,6 @@ import pandas as pd
 import os
 pd.options.mode.chained_assignment = None
 
-mount = ""
-#mount = "/home/angela"
-
-
 parser = argparse.ArgumentParser()
 #novel-ish part of using GEMMA
 parser.add_argument("--snplist", type = str, action = "store", dest = "snplist", required = True, help = "Path to file containing a list of SNPs to be included in analysis.")
@@ -19,6 +15,7 @@ parser.add_argument("--region", type = str, action = "store", dest = "region", r
 parser.add_argument("--BIMBAM", type = str, action = "store", dest = "BIMBAM", required = True, help = "Path to file with BIMBAM-formatted genotypes.")
 parser.add_argument("--anno", type = str, action = "store", dest = "anno", required = False, help = "Path to file containing the annotations.")
 parser.add_argument("--pheno", type = str, action = "store", dest = "pheno", required = True, help = "Path to file containing phenotypic information.")
+parser.add_argument("--covariates", type = str, action = "store", dest = "covariates", required = True, help = "Path to file containing covariates.")
 parser.add_argument("--relatedness", type = str, action = "store", dest = "relatedness", required = True, help = "Path to file containing relatedness matrix w/o IIDs.")
 parser.add_argument("--output", type = str, action = "store", dest = "output", required = False, help = "Name of output file")
 args = parser.parse_args()
@@ -31,8 +28,9 @@ BIMBAM = pd.read_table(args.BIMBAM, header = None, index_col = 0)
 
 #following are just to be used in GEMMA input
 BIMBAM_file = args.BIMBAM
+covariates_file = args.covariates
 if args.anno is None:
-    anno = ""
+    anno = " "
 else:
     anno = " -a " + args.anno + " "
 pheno_file = args.pheno
@@ -41,9 +39,10 @@ relatedness = args.relatedness
 '''
 #testing files
 BIMBAM_file = "BIMBAM/chr22.txt"
-anno = "anno/anno22.txt"
+anno =  " -a anno/anno22.txt "
 pheno_file = "pheno_woIID.txt"
 relatedness = "relatedness_matrix_woIID_noNeg.txt"
+covariates_file = "cov_region_5_PCs_100_ind.txt"
 
 print("Reading in input files.")
 SNPs = list(np.loadtxt("MOSAIC_for_GEMMA_22_snps.txt", dtype = 'string'))#, engine='python')
@@ -52,6 +51,7 @@ region = pd.read_table("region.txt", delim_whitespace = True, dtype = {'region':
 BIMBAM = pd.read_table(BIMBAM_file, header = None)
 pheno_num = 1
 pheno_name_rank = "CHOL_rank"
+pop = "NAT"
 ind = "SoL100865"
 '''
 
@@ -61,9 +61,6 @@ inds = loc_anc_cov['IID'].tolist()
 loc_anc_cov = loc_anc_cov.set_index('IID').transpose()
 SNPs = BIMBAM[[0, 1, 2]]
 SNPs.columns = ['rs', 'A1', 'A0']
-
-#for progress updates
-progress_landmarks = np.linspace(0, len(loc_anc_cov), 11, dtype = int).tolist()
 
 #format of phenotype file
 pheno = range(1,5)
@@ -100,5 +97,14 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
         YRI.index.name = 'rs'
         YRI.reset_index(inplace = True)
     
+    #so now you have BIMBAMs for each ancestry
+    IBS.to_csv("BIMBAM/IBS.txt", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
+    NAT.to_csv("BIMBAM/NAT.txt", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
+    YRI.to_csv("BIMBAM/YRI.txt", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
+    
+    for pop in ['NAT', 'IBS', 'YRI']:
+        GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + " -c " + covariates_file + " -lmm 4 -o " + pheno_name_rank + "_output_" + pop
+        os.system(GEMMA_command + " >> GEMMA_log.txt")
+    print("Ending analyses on " + pheno_name_rank + ".")
     
 print("Analyses in all phenotypes is complete. Have a nice day :)!")
