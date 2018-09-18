@@ -56,6 +56,7 @@ ind = "SoL100865"
 '''
 
 print("Formatting input for processing.")
+BIMBAM = pd.read_table(BIMBAM_file, header = None)
 loc_anc_cov['IID'] = loc_anc_cov['IID'].str.replace(r'.*:', '')
 inds = loc_anc_cov['IID'].tolist()
 loc_anc_cov = loc_anc_cov.set_index('IID').transpose()
@@ -69,7 +70,6 @@ pheno_name = ["CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank"]
 #phenotype loop
 for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     print("Starting analyses on " + pheno_name_rank + ".")
-    pheno_results = pd.DataFrame(columns=['chr', 'rs', 'ps', 'n_miss', 'allele1', 'allele0', 'af', 'beta', 'se', 'l_remle', 'l_mle', 'p_wald', 'p_lrt', 'p_score', 'anc'])
     
     IBS = SNPs
     NAT = SNPs
@@ -105,6 +105,7 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     for pop in ['NAT', 'IBS', 'YRI']:
         GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + " -c " + covariates_file + " -lmm 4 -o " + pheno_name_rank + "_output_" + pop
         os.system(GEMMA_command + " >> GEMMA_log.txt")
+    
     print("Ending analyses on " + pheno_name_rank + ".")
     
 print("Analyses in all phenotypes is complete. Have a nice day :)!")
