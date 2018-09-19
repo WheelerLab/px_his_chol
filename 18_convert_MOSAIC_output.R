@@ -1,5 +1,6 @@
 #MAKE THIS MORE READABLE
 #converts local ancestry output from MOSAIC to a more human-readable format
+#surprisingly this doesn't take horribly long to produce a 31m line file at the end
 
 library(data.table)
 library(dplyr)
