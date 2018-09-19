@@ -7,10 +7,10 @@ import pandas as pd
 
 #unnote when out of testing
 parser = argparse.ArgumentParser()
-parser.add_argument("--loc_anc", type = str, action = "store", dest = "loc_anc", required = True, help = "Path to file containing local ancestry converted from MOSAIC")
+parser.add_argument("--loc_anc", type = str, action = "store", dest = "loc_anc", required = True, help = "Path to file containing local ancestry converted from MOSAIC (output of 18_convert_MOSAIC_output.R)")
 parser.add_argument("--output_prefix", type = str, action = "store", dest = "output_prefix", required = False, default = "MOSAIC_for_GEMMA", help = "Prefix for 'imputed' ancestry file")
 parser.add_argument("--snpfile", type = str, action = "store", dest = "snpfile", required = True, help = "Path to snpfile used in HAPI-UR")
-parser.add_argument("--chr", type = int, action = "store", dest = "chr", required = True, help = "Chromosome under analysis")
+#parser.add_argument("--chr", type = int, action = "store", dest = "chr", required = True, help = "Chromosome under analysis")
 parser.add_argument("--sig_genes", type = str, action = "store", dest = "sig_genes", required = False, help = "List of genes to prune the list of SNPs around (1 Mb before and after)")
 args = parser.parse_args()
 
@@ -18,7 +18,7 @@ print("Reading input files.")
 local_anc = pd.read_csv(args.loc_anc, dtype={'bp':float})#, engine='python')
 snpfile = pd.read_table(args.snpfile, delim_whitespace = True, header = None)
 output_prefix = args.output_prefix
-chr = args.chr
+chr = int(args.snpfile.split(".")[1])
 if args.sig_genes is None:
     sig_genes = [] #keep all SNPs. SIGNIFICANTLY SLOWER.
     print("No significant gene file called, so program will be keeping all SNPs and will be significantly slowed.")
@@ -42,7 +42,7 @@ hap_list = local_anc['haplotype'].unique() #keep one of each hap
 ind_list = []
 for hap in hap_list:
     ind_list.append(hap[:-2])
-ind_list = sorted(set(ind_list), key=ind_list.index) #remove duplicates but preserve order
+ind_list = sorted(set(ind_list), key = ind_list.index) #remove duplicates but preserve order
 
 gene_start_end = pd.read_csv("gene_start_end.csv")
 gene_start_end_chr = gene_start_end.loc[gene_start_end['chr'] == chr] #subset genes to only relevant chr
