@@ -31,8 +31,8 @@ snpfile <- fread("/home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmeri
 snpfile <- snpfile %>% dplyr::select(V3, V4)
 colnames(snpfile) <- c("cM", "bp")
 loc_anc <- left_join(loc_anc, snpfile)
-pdf(paste(output_file_name,".pdf"))
-plot_localanc(chrnos, g.loc, localanc)
-dev.off()
-fwrite(loc_anc, paste(output_file_name, ".csv"), sep = ",", row.names = F, col.names = T, quote = F, na = "NA")
+#pdf(paste(output_file_name, ".pdf", sep = ""))
+#plot_localanc(chrnos, g.loc, localanc) #error here?
+#dev.off()
+fwrite(loc_anc, paste(output_file_name, ".csv", sep = ""), sep = ",", row.names = F, col.names = T, quote = F, na = "NA")
 #Okay but how do I tell which ancestry is which
