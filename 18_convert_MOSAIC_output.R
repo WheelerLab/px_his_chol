@@ -37,6 +37,7 @@ loc_anc <- left_join(loc_anc, snpfile)
 anc_codes <- fread("/home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/ancestry_codes.txt", header = T)
 loc_anc <- left_join(loc_anc, anc_codes, by = "ancestry")
 loc_anc$ancestry <- NULL
+loc_anc$cM <- NULL
 #pdf(paste(output_file_name, ".pdf", sep = ""))
 #plot_localanc(chrnos, g.loc, localanc) #error here?
 #dev.off()
