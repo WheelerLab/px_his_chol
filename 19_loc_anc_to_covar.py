@@ -32,8 +32,7 @@ else:
 #output_prefix = "test_100_ind"
 #sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]  
 
-#local_anc = local_anc.loc[local_anc['prob'] > 0.9] #keep ancestry probabilities > 0.9
-local_anc = local_anc.loc[local_anc['p'] > 0.9] #keep ancestry probabilities > 0.9
+local_anc = local_anc.loc[local_anc['prob'] > 0.9] #keep ancestry probabilities > 0.9
 local_anc = local_anc[['bp', 'haplotype', 'anc']]
 snpfile.columns = ['rs', 'chr', 'cM', 'bp', 'A1', 'A2']
 snpfile = snpfile[['rs', 'bp']]
