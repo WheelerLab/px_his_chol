@@ -44,7 +44,7 @@ for hap in hap_list:
     ind_list.append(hap[:-2])
 ind_list = sorted(set(ind_list), key = ind_list.index) #remove duplicates but preserve order
 
-gene_start_end = pd.read_csv("gene_start_end.csv")
+gene_start_end = pd.read_csv("/home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/gene_start_end.csv")
 gene_start_end_chr = gene_start_end.loc[gene_start_end['chr'] == chr] #subset genes to only relevant chr
 
 #prune gene_start_end_chr to just sig_genes
