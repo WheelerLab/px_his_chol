@@ -4,18 +4,6 @@
 import argparse
 import numpy as np
 import pandas as pd
-import time
-
-'''
-why are you so slow?
-import profilestats
-
-@profile(cumulative=False,
-         print_stats=10, dump_stats=True,
-         profile_filename='profilestats.prof',
-         callgrind_filename='cachegrind.out.profilestats')
-def foo(): pass
-'''
 
 #unnote when out of testing
 parser = argparse.ArgumentParser()
