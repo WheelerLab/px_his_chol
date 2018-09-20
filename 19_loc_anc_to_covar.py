@@ -4,6 +4,18 @@
 import argparse
 import numpy as np
 import pandas as pd
+import time
+
+'''
+why are you so slow?
+import profilestats
+
+@profile(cumulative=False,
+         print_stats=10, dump_stats=True,
+         profile_filename='profilestats.prof',
+         callgrind_filename='cachegrind.out.profilestats')
+def foo(): pass
+'''
 
 #unnote when out of testing
 parser = argparse.ArgumentParser()
@@ -108,19 +120,18 @@ keep_local_anc['anc'] = keep_local_anc['anc'].astype('category')
 #impute SNPs using .ffill()
 print("Starting SNP ancestry imputation.")
 imputed_haplotypes = pd.DataFrame(columns=['anc', 'bp', 'haplotype', 'rs'])
-for hap in hap_list:
+progress_landmarks_hap = np.linspace(0, len(keep_local_anc), 21, dtype = int).tolist()
+num_hap = 0
+for hap in hap_list: #what part in here takes so long?
     ind_haplotype = []
-    for keep_local_anc_row in keep_local_anc.itertuples():
-        if hap == keep_local_anc_row[2]:
-            ind_haplotype.append(keep_local_anc_row)
+    ind_haplotype = keep_local_anc.loc[keep_local_anc['haplotype'] == hap]
     hap_df = pd.DataFrame(ind_haplotype)
     if hap_df.empty: #remove from ind_list to prevent further issues
         print(hap + " is empty. Skipping haplotype and removing individual from further analyses.")
         ind = hap[:-2]
         ind_list.remove(ind)        
         continue
-    hap_df = hap_df.drop('Index', axis = 1)
-    
+
     #impute ancestry for SNPs
     hap_SNP = pd.concat([hap_df, keep_SNP]).sort_values('bp')
     hap_SNP['haplotype'] = hap
@@ -131,12 +142,20 @@ for hap in hap_list:
     #remove non-SNPs
     hap_SNP = hap_SNP.dropna(how = 'any', axis = 0)
     imputed_haplotypes = imputed_haplotypes.append(hap_SNP)
+    num_hap = num_hap + 1
+    print("Completed haplotype " + str(num_hap) + " out of " + len(hap_list) + ".")
+    if num_hap in set(progress_landmarks_hap): #print progress by 5% increments
+      progress = progress_landmarks_hap.index(SNP_num)
+      print("SNP imputation is " + str(progress * 5) + "% complete.")
+        
 print("Haplotype ancestry imputation complete.")
 
 #make covariate file SNP by SNP
 print("Starting SNP ancestry covariate file.")
 study_SNPs = pd.DataFrame(imputed_haplotypes['rs'].unique())
 study_SNPs.columns = ['rs']
+progress_landmarks_ind = np.linspace(0, len(ind_list), 21, dtype = int).tolist()
+num_ind = 0
 
 #collapse haplotype into one individual
 for ind in ind_list:
@@ -180,6 +199,11 @@ for ind in ind_list:
     #restore SNPs column
     study_SNPs.index.name = 'rs'
     study_SNPs.reset_index(inplace = True)
+    num_ind = num_ind + 1
+    if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
+      progress = progress_landmarks_ind.index(SNP_num)
+      print("SNP ancestry covariate conversion is " + str(progress * 5) + "% complete.")
+    
 
 #write list of SNPs to use in GEMMA (-snps)
 study_SNPs.rs.to_csv(output_prefix + "_" + str(chr) + "_snps.txt", index = False, header = False)
@@ -191,6 +215,4 @@ study_SNPs_t.reset_index(inplace = True)
 study_SNPs_t = study_SNPs_t.set_value(0, 'rs', 'IID')
 study_SNPs_t.to_csv(output_prefix + "_" + str(chr) + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False, header = False)
 print("Completed writing SNP and SNP ancestry covariate file to " + output_prefix + "_" + str(chr) + "_snps.txt and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
-
-#from here, parse on a SNP-by-SNP basis for each GEMMA run (see 20_GEMMA_wrapper.py)
-    
+   
