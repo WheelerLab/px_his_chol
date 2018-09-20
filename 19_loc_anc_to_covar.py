@@ -131,7 +131,9 @@ for hap in hap_list: #what part in here takes so long?
     hap_SNP = hap_SNP.dropna(how = 'any', axis = 0)
     imputed_haplotypes = imputed_haplotypes.append(hap_SNP)
     num_hap = num_hap + 1
-    print("Completed haplotype " + str(num_hap) + " out of " + len(hap_list) + ".")
+    
+    #I'm impatient so take this out if you're not impatient
+    print("Completed haplotype " + str(num_hap) + " out of " + str(len(hap_list)) + ".")
     if num_hap in set(progress_landmarks_hap): #print progress by 5% increments
       progress = progress_landmarks_hap.index(SNP_num)
       print("SNP imputation is " + str(progress * 5) + "% complete.")
