@@ -10,7 +10,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--loc_anc", type = str, action = "store", dest = "loc_anc", required = True, help = "Path to file containing local ancestry converted from MOSAIC (output of 18_convert_MOSAIC_output.R)")
 parser.add_argument("--output_prefix", type = str, action = "store", dest = "output_prefix", required = False, default = "MOSAIC_for_GEMMA", help = "Prefix for 'imputed' ancestry file")
 parser.add_argument("--snpfile", type = str, action = "store", dest = "snpfile", required = True, help = "Path to snpfile used in HAPI-UR")
-#parser.add_argument("--chr", type = int, action = "store", dest = "chr", required = True, help = "Chromosome under analysis")
 parser.add_argument("--sig_genes", type = str, action = "store", dest = "sig_genes", required = False, help = "List of genes to prune the list of SNPs around (1 Mb before and after)")
 args = parser.parse_args()
 
@@ -24,13 +23,19 @@ if args.sig_genes is None:
     print("No significant gene file called, so program will be keeping all SNPs and will be significantly slowed.")
 else:
     sig_genes = np.loadtxt(args.sig_genes, dtype = 'string')
+gene_start_end = pd.read_csv("/home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/gene_start_end.csv")
 
+
+'''
 #testing files
-#local_anc = pd.read_csv("loc_anc.csv", dtype={'bp':float}, engine='python')
-#snpfile = pd.read_table("snpfile.22", delim_whitespace = True, header = None)
-#chr = 22
-#output_prefix = "test_100_ind"
-#sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]  
+#in /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/
+local_anc = pd.read_csv("loc_anc.csv", dtype={'bp':float}, engine='python')
+snpfile = pd.read_table("snpfile.22", delim_whitespace = True, header = None)
+gene_start_end = pd.read_csv("gene_start_end.csv")
+output_prefix = "test_100_ind"
+chr = 22
+sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]  
+'''
 
 local_anc = local_anc.loc[local_anc['prob'] > 0.9] #keep ancestry probabilities > 0.9
 local_anc = local_anc[['bp', 'haplotype', 'anc']]
@@ -44,7 +49,6 @@ for hap in hap_list:
     ind_list.append(hap[:-2])
 ind_list = sorted(set(ind_list), key = ind_list.index) #remove duplicates but preserve order
 
-gene_start_end = pd.read_csv("/home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/gene_start_end.csv")
 gene_start_end_chr = gene_start_end.loc[gene_start_end['chr'] == chr] #subset genes to only relevant chr
 
 #prune gene_start_end_chr to just sig_genes
@@ -85,6 +89,7 @@ else:
     keep_SNP.columns = ['bp']
     keep_SNP = keep_SNP.merge(snpfile, on = 'bp', how = 'left')
     print("Kept " + str(len(keep_SNP)) + " SNPs from an original " + str(len(snpfile)) + " SNPs from the snpfile.") 
+keep_SNP = keep_SNP.sort_values('bp')
 
 #prune local_anc to relevant SNPs (this wasn't very useful in the example data)
 #make local anc row bps into a set for speed
@@ -106,63 +111,60 @@ keep_local_anc['bp'] = keep_local_anc['bp'].astype(float)
 keep_local_anc['anc'] = keep_local_anc['anc'].astype('category')
 
 #impute SNPs using .ffill()
-print("Starting SNP ancestry imputation.")
-imputed_haplotypes = pd.DataFrame(columns=['anc', 'bp', 'haplotype', 'rs'])
-progress_landmarks_hap = np.linspace(0, len(keep_local_anc), 21, dtype = int).tolist()
-num_hap = 0
-for hap in hap_list: #what part in here takes so long?
-    ind_haplotype = []
-    ind_haplotype = keep_local_anc.loc[keep_local_anc['haplotype'] == hap]
-    hap_df = pd.DataFrame(ind_haplotype)
-    if hap_df.empty: #remove from ind_list to prevent further issues
-        print(hap + " is empty. Skipping haplotype and removing individual from further analyses.")
-        ind = hap[:-2]
+#RESTRUCTURE SO YOU JUST APPEND INSTEAD OF MAKING A LARGE DATA FRAME
+print("Starting SNP ancestry imputation and dosage file.")
+study_SNPs = pd.DataFrame(keep_SNP['rs'].unique())
+study_SNPs.columns = ['rs']
+study_SNPs_list = study_SNPs['rs'].tolist()
+anc_dosage_write = open(output_prefix + "_" + str(chr) + ".csv", "a+")
+anc_dosage_write.write("IID," + ",".join(study_SNPs_list) + "\n")
+study_SNPs.rs.to_csv(output_prefix + "_" + str(chr) + "_snps.txt", index = False, header = False)
+progress_landmarks_ind = np.linspace(0, len(ind_list), 21, dtype = int).tolist()
+num_ind = 0
+
+for ind in ind_list: #what part in here takes so long?
+    imputed_haplotypes = pd.DataFrame(columns=['anc', 'bp', 'haplotype', 'rs'])
+    #FIRST HAPLOTYPE
+    ind_haplotype_A = []
+    hap_A = ind + "_A"
+    ind_haplotype_A = keep_local_anc.loc[keep_local_anc['haplotype'] == hap_A]
+    if ind_haplotype_A.empty: #remove from ind_list to prevent further issues
+        print(hap_A + " is empty. Skipping haplotype and removing individual from further analyses.")
         ind_list.remove(ind)        
         continue
 
     #impute ancestry for SNPs
-    hap_SNP = pd.concat([hap_df, keep_SNP]).sort_values('bp')
-    hap_SNP['haplotype'] = hap
-    hap_SNP['anc'] = hap_SNP['anc'].ffill().bfill() #fills NA with the closest value before and after
+    hap_SNP_A = pd.concat([ind_haplotype_A, keep_SNP]).sort_values('bp')
+    hap_SNP_A['haplotype'] = hap_A
+    hap_SNP_A['anc'] = hap_SNP_A['anc'].ffill().bfill() #fills NA with the closest value before and after
         #try to keep it NA in between flips? but I don't know of a method that does that
             #unless I write one I guess
 
     #remove non-SNPs
-    hap_SNP = hap_SNP.dropna(how = 'any', axis = 0)
-    imputed_haplotypes = imputed_haplotypes.append(hap_SNP)
-    num_hap = num_hap + 1
+    hap_SNP_A = hap_SNP_A.dropna(how = 'any', axis = 0)
+    imputed_haplotypes = imputed_haplotypes.append(hap_SNP_A)
     
-    #I'm impatient so take this out if you're not impatient
-    print("Completed haplotype " + str(num_hap) + " out of " + str(len(hap_list)) + ".")
-    if num_hap in set(progress_landmarks_hap): #print progress by 5% increments
-      progress = progress_landmarks_hap.index(SNP_num)
-      print("SNP imputation is " + str(progress * 5) + "% complete.")
-        
-print("Haplotype ancestry imputation complete.")
+    #SECOND HAPLOTYPE
+    ind_haplotype_B = []
+    hap_B = ind + "_B"
+    ind_haplotype_B = keep_local_anc.loc[keep_local_anc['haplotype'] == hap_B]
+    if ind_haplotype_B.empty: #remove from ind_list to prevent further issues
+        print(hap_B + " is empty. Skipping haplotype and removing individual from further analyses.")
+        ind_list.remove(ind)        
+        continue
 
-#make covariate file SNP by SNP
-print("Starting SNP ancestry covariate file.")
-study_SNPs = pd.DataFrame(imputed_haplotypes['rs'].unique())
-study_SNPs.columns = ['rs']
-progress_landmarks_ind = np.linspace(0, len(ind_list), 21, dtype = int).tolist()
-num_ind = 0
+    #impute ancestry for SNPs
+    hap_SNP_B = pd.concat([ind_haplotype_B, keep_SNP]).sort_values('bp')
+    hap_SNP_B['haplotype'] = hap_B
+    hap_SNP_B['anc'] = hap_SNP_B['anc'].ffill().bfill() #fills NA with the closest value before and after
+        #try to keep it NA in between flips? but I don't know of a method that does that
+            #unless I write one I guess
 
-#collapse haplotype into one individual
-for ind in ind_list:
-    ind_anc_A = [] #haplotype 1
-    ind_anc_B = [] #haplotype 2
-    for imputed_haplotypes_row in imputed_haplotypes.itertuples():
-        if imputed_haplotypes_row[3] == (ind + "_A"):
-            ind_anc_A.append(imputed_haplotypes_row)
-        elif imputed_haplotypes_row[3] == (ind + "_B"):
-            ind_anc_B.append(imputed_haplotypes_row)
-    ind_anc_A = pd.DataFrame(ind_anc_A)
-    ind_anc_A = ind_anc_A.drop('Index', axis = 1).drop('bp', axis = 1).drop('haplotype', axis = 1)
-    ind_anc_A.columns = ['anc_A', 'rs']
-    ind_anc_B = pd.DataFrame(ind_anc_B)
-    ind_anc_B = ind_anc_B.drop('Index', axis = 1).drop('bp', axis = 1).drop('haplotype', axis = 1)
-    ind_anc_B.columns = ['anc_B', 'rs']
-    ind_anc = ind_anc_A.set_index('rs').join(ind_anc_B.set_index('rs'))
+    #remove non-SNPs
+    hap_SNP_B = hap_SNP_B.dropna(how = 'any', axis = 0)
+    imputed_haplotypes = imputed_haplotypes.append(hap_SNP_B)
+    ind_anc = hap_SNP_A.set_index('rs').join(hap_SNP_B.set_index('rs'), lsuffix = "_A", rsuffix = "_B")
+    ind_anc = ind_anc[["anc_A", "anc_B"]]
     
     #now set ancestry "dosages"
     #first col is NAT, second is IBS, and third is YRI
@@ -184,25 +186,19 @@ for ind in ind_list:
             anc_dosage.append([ind_anc_row[0], "NA\tNA\tNA"]) #who knows
     anc_dosage_df = pd.DataFrame(anc_dosage)
     anc_dosage_df.columns = ["rs", ind]
-    study_SNPs = study_SNPs.set_index('rs').join(anc_dosage_df.set_index('rs'))
+    anc_dosage_list = anc_dosage_df[ind].tolist()
+    anc_dosage_write.write(ind + "," + ",".join(anc_dosage_list) + "\n")
     
-    #restore SNPs column
-    study_SNPs.index.name = 'rs'
-    study_SNPs.reset_index(inplace = True)
     num_ind = num_ind + 1
-    if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
-      progress = progress_landmarks_ind.index(SNP_num)
-      print("SNP ancestry covariate conversion is " + str(progress * 5) + "% complete.")
     
+    #testing thing
+    print(ind)
+    
+    if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
+      progress = progress_landmarks_ind.index(num_ind)
+      print("SNP ancestry covariate conversion is " + str(progress * 5) + "% complete.")
 
 #write list of SNPs to use in GEMMA (-snps)
-study_SNPs.rs.to_csv(output_prefix + "_" + str(chr) + "_snps.txt", index = False, header = False)
-
-#write file
-study_SNPs_t = study_SNPs.transpose()
-study_SNPs_t.index.name = 'rs'
-study_SNPs_t.reset_index(inplace = True)
-study_SNPs_t = study_SNPs_t.set_value(0, 'rs', 'IID')
-study_SNPs_t.to_csv(output_prefix + "_" + str(chr) + ".csv", sep = ",", na_rep = "NA\tNA\tNA", index = False, header = False)
+anc_dosage_write.close()
 print("Completed writing SNP and SNP ancestry covariate file to " + output_prefix + "_" + str(chr) + "_snps.txt and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
    
