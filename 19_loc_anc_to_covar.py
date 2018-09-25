@@ -126,7 +126,7 @@ for ind in ind_list: #what part in here takes so long?
     hap_A = ind + "_A"
     ind_haplotype_A = keep_local_anc.loc[keep_local_anc['haplotype'] == hap_A]
     if ind_haplotype_A.empty: #remove from ind_list to prevent further issues
-        print(hap_A + " is empty. Skipping haplotype and removing individual from further analyses.")
+        print(hap_A + " did not have sufficient coverage. Skipping haplotype and removing individual from further analyses.")
         ind_list.remove(ind) 
         num_ind = num_ind + 1
         continue
@@ -147,7 +147,7 @@ for ind in ind_list: #what part in here takes so long?
     hap_B = ind + "_B"
     ind_haplotype_B = keep_local_anc.loc[keep_local_anc['haplotype'] == hap_B]
     if ind_haplotype_B.empty: #remove from ind_list to prevent further issues
-        print(hap_B + " is empty. Skipping haplotype and removing individual from further analyses.")
+        print(hap_B + " did not have sufficient coverage. Skipping haplotype and removing individual from further analyses.")
         ind_list.remove(ind)  
         num_ind = num_ind + 1
         continue
