@@ -1,5 +1,5 @@
 #"imputes" local ancestry between markers to use local ancestry as a covariate in GEMMA on a SNP-by-SNP basis
-#probably run once per chromosome?
+#example input - python 19_loc_anc_to_covar.py --loc_anc local_anc_22_HCHS.csv --snpfile /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/snpfile.22
 
 import argparse
 import numpy as np
@@ -17,7 +17,7 @@ print("Reading input files.")
 local_anc = pd.read_csv(args.loc_anc, dtype={'bp':float})#, engine='python')
 snpfile = pd.read_table(args.snpfile, delim_whitespace = True, header = None)
 output_prefix = args.output_prefix
-chr = int(args.snpfile[-2:].replace(".", ""))
+chr = int(args.snpfile.split(".")[1])
 if args.sig_genes is None:
     sig_genes = [] #keep all SNPs. SIGNIFICANTLY SLOWER.
     print("No significant gene file called, so program will be keeping all SNPs and will be significantly slowed.")
@@ -37,7 +37,6 @@ chr = 22
 sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]  
 '''
 
-local_anc = local_anc.loc[local_anc['prob'] > 0.9] #keep ancestry probabilities > 0.9
 local_anc = local_anc[['bp', 'haplotype', 'anc']]
 snpfile.columns = ['rs', 'chr', 'cM', 'bp', 'A1', 'A2']
 snpfile = snpfile[['rs', 'bp']]
@@ -130,7 +129,8 @@ for ind in ind_list: #what part in here takes so long?
     ind_haplotype_A = keep_local_anc.loc[keep_local_anc['haplotype'] == hap_A]
     if ind_haplotype_A.empty: #remove from ind_list to prevent further issues
         print(hap_A + " is empty. Skipping haplotype and removing individual from further analyses.")
-        ind_list.remove(ind)        
+        ind_list.remove(ind) 
+        num_ind = num_ind + 1
         continue
 
     #impute ancestry for SNPs
@@ -150,7 +150,8 @@ for ind in ind_list: #what part in here takes so long?
     ind_haplotype_B = keep_local_anc.loc[keep_local_anc['haplotype'] == hap_B]
     if ind_haplotype_B.empty: #remove from ind_list to prevent further issues
         print(hap_B + " is empty. Skipping haplotype and removing individual from further analyses.")
-        ind_list.remove(ind)        
+        ind_list.remove(ind)  
+        num_ind = num_ind + 1
         continue
 
     #impute ancestry for SNPs
@@ -187,7 +188,8 @@ for ind in ind_list: #what part in here takes so long?
     anc_dosage_df = pd.DataFrame(anc_dosage)
     anc_dosage_df.columns = ["rs", ind]
     anc_dosage_list = anc_dosage_df[ind].tolist()
-    anc_dosage_write.write(ind + "," + ",".join(anc_dosage_list) + "\n")
+    if len(anc_dosage_list) == len(study_SNPs_list): #if there's a proper number of SNPs in the model
+      anc_dosage_write.write(ind + "," + ",".join(anc_dosage_list) + "\n")
     
     num_ind = num_ind + 1
     if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
