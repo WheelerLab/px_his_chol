@@ -1,5 +1,5 @@
-#MAKE THIS MORE READABLE
 #converts local ancestry output from MOSAIC to a more human-readable format
+#example input - Rscript 18_convert_MOSAIC_output.R localanc_HCHS_3way_1-12135_1-1_24754_60_0.99_100.RData /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/HCHS_chr1.phind /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/snpfile.1 local_anc_1_HCHS
 #surprisingly this doesn't take horribly long to produce a 31m line file at the end
 
 library(data.table)
@@ -42,4 +42,3 @@ loc_anc$cM <- NULL
 #plot_localanc(chrnos, g.loc, localanc) #error here?
 #dev.off()
 fwrite(loc_anc, paste(output_file_name, ".csv", sep = ""), sep = ",", row.names = F, col.names = T, quote = F, na = "NA")
-#Okay but how do I tell which ancestry is which
