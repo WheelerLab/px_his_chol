@@ -23,6 +23,7 @@ g_loc$Var3 <- as.integer(g_loc$Var3)
 loc_anc <- dplyr::left_join(df, g_loc)
 loc_anc$Var3 <- NULL
 colnames(loc_anc) <- c("ancestry", "haplotype_num", "prob", "bp")
+loc_anc <- subset(loc_anc, prob > 0.9) #keep ancestry probabilities > 0.9
 phind <- fread(phind_file_name, header = F)
 phind <- phind %>% dplyr::select(V1)
 colnames(phind) <- "haplotype"
