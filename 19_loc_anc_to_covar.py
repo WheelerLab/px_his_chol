@@ -17,7 +17,7 @@ print("Reading input files.")
 local_anc = pd.read_csv(args.loc_anc, dtype={'bp':float})#, engine='python')
 snpfile = pd.read_table(args.snpfile, delim_whitespace = True, header = None)
 output_prefix = args.output_prefix
-chr = int(args.snpfile.split(".")[1])
+chr = int(args.snpfile[-2].replace(".", ""))
 if args.sig_genes is None:
     sig_genes = [] #keep all SNPs. SIGNIFICANTLY SLOWER.
     print("No significant gene file called, so program will be keeping all SNPs and will be significantly slowed.")
