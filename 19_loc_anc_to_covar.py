@@ -190,10 +190,6 @@ for ind in ind_list: #what part in here takes so long?
     anc_dosage_write.write(ind + "," + ",".join(anc_dosage_list) + "\n")
     
     num_ind = num_ind + 1
-    
-    #testing thing
-    print(ind)
-    
     if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
       progress = progress_landmarks_ind.index(num_ind)
       print("SNP ancestry covariate conversion is " + str(progress * 5) + "% complete.")
