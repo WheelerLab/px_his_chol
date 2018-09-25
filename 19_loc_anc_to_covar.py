@@ -26,15 +26,15 @@ else:
 gene_start_end = pd.read_csv("/home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/gene_start_end.csv")
 
 
-'''
 #testing files
 #in /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/100_ind/
-local_anc = pd.read_csv("loc_anc.csv", dtype={'bp':float}, engine='python')
-snpfile = pd.read_table("snpfile.22", delim_whitespace = True, header = None)
+'''
+local_anc = pd.read_csv("local_anc_1_HCHS_100000.csv", dtype={'bp':float}, engine='python')
+snpfile = pd.read_table("snpfile.1", delim_whitespace = True, header = None)
 gene_start_end = pd.read_csv("gene_start_end.csv")
-output_prefix = "test_100_ind"
-chr = 22
-sig_genes = ["CECR1", "SNAP29", "GNAZ", "TEF", "PRR5"]  
+output_prefix = "TEST_"
+chr = 1
+sig_genes = ["PABPC4", "TRIT1"]
 '''
 
 local_anc = local_anc[['bp', 'haplotype', 'anc']]
@@ -78,6 +78,7 @@ if len(sig_genes) == 0:
     keep_SNP = pd.DataFrame(keep_SNP)
     keep_SNP.columns = ['bp']
     keep_SNP = keep_SNP.merge(snpfile, on = 'bp', how = 'left')
+    keep_SNP = keep_SNP.sort_values('bp').drop_duplicates()
     print("Kept all SNPs from an original " + str(len(snpfile)) + " SNPs from the snpfile.") 
 else:
     for SNP in iter(test_SNPs_snpfile):
@@ -87,8 +88,8 @@ else:
     keep_SNP = pd.DataFrame(keep_SNP)
     keep_SNP.columns = ['bp']
     keep_SNP = keep_SNP.merge(snpfile, on = 'bp', how = 'left')
+    keep_SNP = keep_SNP.sort_values('bp').drop_duplicates()
     print("Kept " + str(len(keep_SNP)) + " SNPs from an original " + str(len(snpfile)) + " SNPs from the snpfile.") 
-keep_SNP = keep_SNP.sort_values('bp')
 
 #prune local_anc to relevant SNPs (this wasn't very useful in the example data)
 #make local anc row bps into a set for speed
@@ -112,12 +113,9 @@ keep_local_anc['anc'] = keep_local_anc['anc'].astype('category')
 #impute SNPs using .ffill()
 #RESTRUCTURE SO YOU JUST APPEND INSTEAD OF MAKING A LARGE DATA FRAME
 print("Starting SNP ancestry imputation and dosage file.")
-study_SNPs = pd.DataFrame(keep_SNP['rs'].unique())
-study_SNPs.columns = ['rs']
-study_SNPs_list = study_SNPs['rs'].tolist()
 anc_dosage_write = open(output_prefix + "_" + str(chr) + ".csv", "a+")
-anc_dosage_write.write("IID," + ",".join(study_SNPs_list) + "\n")
-study_SNPs.rs.to_csv(output_prefix + "_" + str(chr) + "_snps.txt", index = False, header = False)
+anc_dosage_write.write("IID," + ",".join(keep_SNP['rs'].tolist()) + "\n")
+keep_SNP.rs.to_csv(output_prefix + "_" + str(chr) + "_snps.txt", index = False, header = False)
 progress_landmarks_ind = np.linspace(0, len(ind_list), 21, dtype = int).tolist()
 num_ind = 0
 
@@ -187,9 +185,10 @@ for ind in ind_list: #what part in here takes so long?
             anc_dosage.append([ind_anc_row[0], "NA\tNA\tNA"]) #who knows
     anc_dosage_df = pd.DataFrame(anc_dosage)
     anc_dosage_df.columns = ["rs", ind]
+    anc_dosage_df = anc_dosage_df.drop_duplicates()
     anc_dosage_list = anc_dosage_df[ind].tolist()
-    if len(anc_dosage_list) == len(study_SNPs_list): #if there's a proper number of SNPs in the model
-      anc_dosage_write.write(ind + "," + ",".join(anc_dosage_list) + "\n")
+    
+    anc_dosage_write.write(ind + "," + ",".join(anc_dosage_list) + "\n")
     
     num_ind = num_ind + 1
     if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
