@@ -197,5 +197,8 @@ for ind in ind_list: #what part in here takes so long?
 
 #write list of SNPs to use in GEMMA (-snps)
 anc_dosage_write.close()
-print("Completed writing SNP and SNP ancestry covariate file to " + output_prefix + "_" + str(chr) + "_snps.txt and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
+ind_file = open(output_prefix + "_" + str(chr) + "_ind.txt", "w")
+ind_file.write("\n".join(ind_list))
+ind_file.close()
+print("Completed writing SNP, individual, and SNP ancestry file to " + output_prefix + "_" + str(chr) + "_snps.txt, " + output_prefix + "_" + str(chr) + "_ind.txt, and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
    
