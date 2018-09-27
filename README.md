@@ -35,9 +35,9 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 17_make_classes_from_HAPI-UR: makes .classes file for RFMix from HAPI-UR (use in ancestry pipeline)
 
-18_convert_MOSAIC_output.R: converts local ancestry output from MOSAIC to a more human-readable format. Output to be used in 19_loc_anc_to_covar.py.
+18_convert_MOSAIC_output.R: converts local ancestry output from MOSAIC to a more human-readable format. Output to be used in 19_loc_anc.py.
 
-19_loc_anc_to_covar.py: "imputes" local ancestry between markers to use local ancestry as a covariate in GEMMA on a SNP-by-SNP basis
+19_loc_anc.py: "imputes" local ancestry between markers to use local ancestry as a dosage in GEMMA.
 
 20_GEMMA_wrapper_local_anc_cov.py: wrapper for SNP-by-SNP level GEMMA
 
