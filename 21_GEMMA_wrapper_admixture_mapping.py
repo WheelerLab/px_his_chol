@@ -1,4 +1,4 @@
-#wrapper for admixture mapping in GEMMA
+#uses local ancestry as a dosage to run an ancestry-by-ancestry level admixture mapping analysis.
 import argparse
 import numpy as np
 import pandas as pd
