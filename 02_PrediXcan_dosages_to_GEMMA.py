@@ -64,8 +64,8 @@ for i in range(1, 23):
                     dosages = dosages.set_index(1)
                     dosages = local_anc_samples.join(dosages)
                     dosages = dosages[0].tolist()
-                    else:
-                        dosages = arr[6:]
+                else:
+                    dosages = arr[6:]
             
                 dosages_str = '\t'.join(dosages)
                 BIMBAM_format = (rs + "\t" + A1 + "\t" + A2 + "\t" + dosages_str + "\n")
