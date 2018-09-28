@@ -1,45 +1,45 @@
 # px_his_chol
 Scripts used in studying the lipid traits of the Hispanic Community Health Study and the Multi-Ethnic Study of Atherosclerosis, Hispanic
 
-*01_PrediXcan_dosages_to_GEMMA_BIMBAM.py: defunct, see 02_PrediXcan_dosages_to_GEMMA.py
+* *01_PrediXcan_dosages_to_GEMMA_BIMBAM.py: defunct, see 02_PrediXcan_dosages_to_GEMMA.py
 
-02_PrediXcan_dosages_to_GEMMA_anno.py: takes information from PrediXcan-style dosages to make SNP annotation and BIMBAM files for GEMMA
+* 02_PrediXcan_dosages_to_GEMMA_anno.py: takes information from PrediXcan-style dosages to make SNP annotation and BIMBAM files for GEMMA
 
-03_pred_exp_to_GEMMA_input.R: converts predicted expression (PrediXcan output) to GEMMA "genotype" input
+* 03_pred_exp_to_GEMMA_input.R: converts predicted expression (PrediXcan output) to GEMMA "genotype" input
 
-*04_make_KING_GRM.R: defunct, use 13_make_KING.R
+* *04_make_KING_GRM.R: defunct, use 13_make_KING.R
 
-05_sig_genes_GEMMA_pred_exp.R: finds most significant genes (both FDR < 0.05 and p < bonferroni correction) from GEMMA predicted expression LMM output
+* 05_sig_genes_GEMMA_pred_exp.R: finds most significant genes (both FDR < 0.05 and p < bonferroni correction) from GEMMA predicted expression LMM output
 
-06_sig_SNP_GEMMA.py: finds significant SNPs in a series of GEMMA files
+* 06_sig_SNP_GEMMA.py: finds significant SNPs in a series of GEMMA files
 
-07_1000_to_PCA.py: extract YRI, CEU, and PEL from 1000G to use as anchors in Hispanic PCA
+* 07_1000_to_PCA.py: extract YRI, CEU, and PEL from 1000G to use as anchors in Hispanic PCA
 
-08_compare_MESA.py: extract SNP weights from .db files
+* 08_compare_MESA.py: extract SNP weights from .db files
 
-*09_make_bfile_to_RFMix: converts from PLINK --recode beagle output to RFMix input (HAS SEVERE MEMORY ISSUES)
+* *09_make_bfile_to_RFMix: converts from PLINK --recode beagle output to RFMix input (HAS SEVERE MEMORY ISSUES)
 
-*10_chromosome_painting_for_R.py: make "chromosome painting" input (for R's ggplot) from LAMP output
+* *10_chromosome_painting_for_R.py: make "chromosome painting" input (for R's ggplot) from LAMP output
 
-11_filter_Native_American_WGS.sh: Convert and filter individual vcf files to PLINK format
+* 11_filter_Native_American_WGS.sh: Convert and filter individual vcf files to PLINK format
 
-*12_pi1.R: Calculates pi1 across phenotypes b/w HCHS and MESA HIS
+* *12_pi1.R: Calculates pi1 across phenotypes b/w HCHS and MESA HIS
 
-13_make_KING.R: Runs KING and converts output to both matrix and GCTA format
+* 13_make_KING.R: Runs KING and converts output to both matrix and GCTA format
 
-14_make_eigenvalue_plot.R: make principal component eigenvalue plot as seen in PAGE fig. 4B
+* 14_make_eigenvalue_plot.R: make principal component eigenvalue plot as seen in PAGE fig. 4B
 
-15_ancestry_pipeline.sh: personal version of https://github.com/armartin/ancestry_pipeline
+* 15_ancestry_pipeline.sh: personal version of https://github.com/armartin/ancestry_pipeline
 
-16_make_qq.R: makes qq and aggregate gene lists from GEMMA/PrediXcan output
+* 16_make_qq.R: makes qq and aggregate gene lists from GEMMA/PrediXcan output
 
-*17_make_classes_from_HAPI-UR: makes .classes file for RFMix from HAPI-UR (use in ancestry pipeline)
+* *17_make_classes_from_HAPI-UR: makes .classes file for RFMix from HAPI-UR (use in ancestry pipeline)
 
-18_convert_MOSAIC_output.R: converts local ancestry output from MOSAIC to a more human-readable format. Output to be used in 19_loc_anc.py.
+* 18_convert_MOSAIC_output.R: converts local ancestry output from MOSAIC to a more human-readable format. Output to be used in 19_loc_anc.py.
 
-19_loc_anc.py: "imputes" local ancestry between markers to use local ancestry as a dosage in GEMMA.
+* 19_loc_anc.py: "imputes" local ancestry between markers to use local ancestry as a dosage in GEMMA.
 
-20_GEMMA_wrapper_local_anc_cov.py: wrapper for SNP-by-SNP level GEMMA
+* 20_GEMMA_wrapper_local_anc_cov.py: wrapper for SNP-by-SNP level GEMMA
 
 *depreciated and not used for final analysis
 
