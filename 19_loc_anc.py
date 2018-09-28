@@ -193,7 +193,7 @@ for ind in ind_list: #what part in here takes so long?
     num_ind = num_ind + 1
     if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
       progress = progress_landmarks_ind.index(num_ind)
-      print("SNP ancestry covariate conversion is " + str(progress * 5) + "% complete.")
+      print("SNP ancestry imputation and conversion is " + str(progress * 5) + "% complete.")
 
 #write list of SNPs to use in GEMMA (-snps)
 anc_dosage_write.close()
