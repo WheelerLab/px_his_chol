@@ -1,6 +1,7 @@
 #uses local ancestry as a dosage to run an ancestry-by-ancestry level admixture mapping analysis.
+#cd /home/angela/px_his_chol/local_anc_GEMMA/MOSAIC_RESULTS/
+#python 21_GEMMA_wrapper_admixture_mapping.py --snplist MOSAIC_for_GEMMA_1_snps.txt --snptable MOSAIC_for_GEMMA_1.csv --ind_list MOSAIC_for_GEMMA_1_ind.txt --BIMBAM BIMBAM/chr1.txt.gz --anno anno/anno1.txt --pheno pheno_chr1.txt --relatedness relatedness_chr1.txt --covariate covariates_chr1.txt --output chr1
 import argparse
-import gzip
 import numpy as np
 import pandas as pd
 import os
@@ -18,7 +19,7 @@ parser.add_argument("--BIMBAM", type = str, action = "store", dest = "BIMBAM", r
 parser.add_argument("--pheno", type = str, action = "store", dest = "pheno", required = True, help = "Path to file containing phenotypic information w/o IIDs for only individuals in analysis.")
 parser.add_argument("--covariates", type = str, action = "store", dest = "covariates", required = False, help = "Path to file containing covariates w/o IIDs for only individuals in analysis.")
 parser.add_argument("--anno", type = str, action = "store", dest = "anno", required = False, help = "Path to file containing the annotations.")
-#parser.add_argument("--output", type = str, action = "store", dest = "output", required = False, help = "Name of output file")
+parser.add_argument("--output", type = str, action = "store", dest = "output", required = False, help = "Name of output file")
 args = parser.parse_args()
 
 print("Reading input files.")
@@ -116,9 +117,13 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     YRI.to_csv("BIMBAM/YRI.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
     
     for pop in ['NAT', 'IBS', 'YRI']:
-        GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + pheno_name_rank + "_output_" + pop
-        os.system(GEMMA_command + " >> GEMMA_log.txt")
+        if args.output is not None:
+            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + pheno_name_rank + "_" + pop
+            os.system(GEMMA_command + " >> GEMMA_log.txt")
+        else:
+            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + args.output + "_" + pheno_name_rank + "_" + pop
+            os.system(GEMMA_command + " >> GEMMA_log.txt")
+        
     
     print("Ending analyses on " + pheno_name_rank + ".")
-    
 print("Analyses in all phenotypes is complete. Have a nice day :)!")
