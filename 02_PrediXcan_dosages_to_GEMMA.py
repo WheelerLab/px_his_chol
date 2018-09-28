@@ -3,22 +3,25 @@ import argparse
 import gzip
 import numpy as np
 import pandas as pd
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dosage_path", type = str, action = "store", dest = "dosage_path", required = True, help = "Path to folder containing dosages and samples.txt")
-parser.add_argument("--BIMBAM_path", type = str, action = "store", dest = "BIMBAM_path", required = False, default = "BIMBAM/", help = "Name of output folder for BIMBAMs.")
-parser.add_argument("--anno_path", type = str, action = "store", dest = "anno_path", required = False, default = "anno/", help = "Name of output folder for annotations.")
+#parser.add_argument("--BIMBAM_path", type = str, action = "store", dest = "BIMBAM_path", required = False, default = "BIMBAM/", help = "Name of output folder for BIMBAMs.")
+#parser.add_argument("--anno_path", type = str, action = "store", dest = "anno_path", required = False, default = "anno/", help = "Name of output folder for annotations.")
 parser.add_argument("--local_anc_samples", type = str, action = "store", dest = "local_anc_samples", required = False, help = "Path to file containing samples to include (output of 19_loc_anc.py).")
 parser.add_argument("--local_anc_SNPs", type = str, action = "store", dest = "local_anc_SNPs", required = False, help = "Path to file containing SNPs to include (output of 19_loc_anc.py).")
 parser.add_argument("--chr", type = int, action = "store", dest = "chr", required = False, help = "Path to chromosome to analyze. If no input, analyzes all 22 pairs of chromosomes.")
 args = parser.parse_args()
 
-if args.BIMBAM_path is not None or args.anno_path is not None:     
-    print("MAKE BIMBAM/ AND anno/ FOLDERS BEFORE IT'S TOO LATE.")
 print("Reading input files.")
 dosage_path = args.dosage_path
-BIMBAM_path = args.BIMBAM_path
-anno_path = args.anno_path
+BIMBAM_path = "BIMBAM/"
+anno_path = "anno/"
+
+os.system("mkdir -p BIMBAM")
+os.system("mkdir -p anno")
+
 if args.local_anc_samples is not None:
     pd.read_csv(args.local_anc_samples, sep = ":", header = None)
 if args.chr is not None:
