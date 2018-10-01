@@ -115,7 +115,6 @@ keep_local_anc['anc'] = keep_local_anc['anc'].astype('category')
 print("Starting SNP ancestry imputation and dosage file.")
 anc_dosage_write = open(output_prefix + "_" + str(chr) + ".csv", "a+")
 anc_dosage_write.write("IID," + ",".join(keep_SNP['rs'].tolist()) + "\n")
-keep_SNP.rs.to_csv(output_prefix + "_" + str(chr) + "_snps.txt", index = False, header = False)
 progress_landmarks_ind = np.linspace(0, len(ind_list), 21, dtype = int).tolist()
 num_ind = 0
 
@@ -200,5 +199,5 @@ anc_dosage_write.close()
 ind_file = open(output_prefix + "_" + str(chr) + "_ind.txt", "w")
 ind_file.write("\n".join(ind_list))
 ind_file.close()
-print("Completed writing SNP, individual, and SNP ancestry file to " + output_prefix + "_" + str(chr) + "_snps.txt, " + output_prefix + "_" + str(chr) + "_ind.txt, and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
+print("Completed writing individual and SNP ancestry file to " + output_prefix + "_" + str(chr) + "_ind.txt, and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
    
