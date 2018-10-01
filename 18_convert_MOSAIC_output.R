@@ -1,17 +1,27 @@
 #converts local ancestry output from MOSAIC to a more human-readable format
-#example input - Rscript 18_convert_MOSAIC_output.R localanc_HCHS_3way_1-12135_1-1_24754_60_0.99_100.RData /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/HCHS_chr1.phind /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/snpfile.1 local_anc_1_HCHS
+#example input - Rscript 18_convert_MOSAIC_output.R --input_file_name localanc_HCHS_3way_1-12135_1-1_24754_60_0.99_100.RData --phind_file_name /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/HCHS_chr1.phind --snpfile_file_name /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/snpfile.1 --output_file_name local_anc_1_HCHS
 #surprisingly this doesn't take horribly long to produce a 31m line file at the end
 
+library(argparse)
 library(data.table)
 library(dplyr)
 library(MOSAIC)
 library(tibble)
 library(reshape2)
-args <- commandArgs(trailingOnly = T)
-input_file_name <- args[1] #localanc.RData produced by MOSAIC
-phind_file_name <- args[2] #MOSAIC input admixed.phind
-snpfile_file_name <- args[3] #MOSAIC input snpfile
-output_file_name <- args[4] #output prefix
+
+parser <- ArgumentParser()
+parser$add_argument("--input_file_name",help="localanc.RData produced by MOSAIC")
+parser$add_argument("--phind_file_name",help="MOSAIC input admixed.phind")
+parser$add_argument("--snpfile_file_name", help="MOSAIC input snpfile")
+parser$add_argument("--output_file_name", help="Output prefix. Default = 'local_anc'.", default = "local_anc")
+parser$add_argument("--probability_threshold", help = "Threshold to cut off ancestry probability. Default = 0.8.", default = 0.8)
+args <- parser$parse_args()
+
+input_file_name <- args$input_file_name
+phind_file_name <- args$phind_file_name
+snpfile_file_name <- args$snpfile_file_name
+output_file_name <- args$output_file_name
+probability_threshold <- as.integer(args$probability_threshold)
 
 load(input_file_name)
 df <- reshape2::melt(localanc[[1]])
@@ -23,7 +33,7 @@ g_loc$Var3 <- as.integer(g_loc$Var3)
 loc_anc <- dplyr::left_join(df, g_loc)
 loc_anc$Var3 <- NULL
 colnames(loc_anc) <- c("ancestry", "haplotype_num", "prob", "bp")
-loc_anc <- subset(loc_anc, prob > 0.9) #keep ancestry probabilities > 0.9
+loc_anc <- subset(loc_anc, prob > probability_threshold) #keep ancestry probabilities > 0.8
 phind <- fread(phind_file_name, header = F)
 phind <- phind %>% dplyr::select(V1)
 colnames(phind) <- "haplotype"
@@ -42,4 +52,5 @@ loc_anc$cM <- NULL
 #pdf(paste(output_file_name, ".pdf", sep = ""))
 #plot_localanc(chrnos, g.loc, localanc) #error here?
 #dev.off()
-fwrite(loc_anc, paste(output_file_name, ".csv", sep = ""), sep = ",", row.names = F, col.names = T, quote = F, na = "NA")
+output_file_name <- paste(output_file_name, ".csv", sep = "")
+fwrite(loc_anc, output_file_name, sep = ",", row.names = F, col.names = T, quote = F, na = "NA")
