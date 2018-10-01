@@ -39,7 +39,9 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 * 19_loc_anc.py: "imputes" local ancestry between markers to use local ancestry as a dosage in GEMMA.
 
-* 20_GEMMA_wrapper_local_anc_cov.py: wrapper for SNP-by-SNP level GEMMA
+* *20_GEMMA_wrapper_local_anc_cov.py: wrapper for SNP-by-SNP level GEMMA
+
+* 21_GEMMA_wrapper_admixture_mapping.py: uses local ancestry as a dosage to run an ancestry-by-ancestry level admixture mapping analysis
 
 *depreciated and not used for final analysis
 
