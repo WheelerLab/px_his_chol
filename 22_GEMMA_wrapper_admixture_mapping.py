@@ -75,7 +75,10 @@ SNP_list = SNPs['rs'].tolist()
 pheno = range(1,5)
 pheno_name = ["CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank"]
 
-
+#progress bar
+progress_landmarks_ind = np.linspace(0, len(inds), 21, dtype = int).tolist()
+num_ind = 0
+    
     '''
     Okay so for whoever bothers to read this
     I tried making a large data frame and lists of lists with the dosages
@@ -85,6 +88,10 @@ pheno_name = ["CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank"]
     And then read that all back in and add the BIMBAM information
     So I swear I tried to do it a fancier way but it's so slow with so many people
     '''
+
+IBS_file = open("BIMBAM/IBS.txt", "a+")
+NAT_file = open("BIMBAM/NAT.txt", "a+")
+YRI_file = open("BIMBAM/YRI.txt", "a+")
     
 for ind in inds:
     #iterate through cols
@@ -102,7 +109,7 @@ for ind in inds:
     YRI_file.write("\t".join(YRI_list) + "\n")
         
     num_ind = num_ind + 1
-        if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
+    if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
         progress = progress_landmarks_ind.index(num_ind)
         print("Individual ancestry dosage conversion is " + str(progress * 5) + "% complete.")
     
@@ -131,17 +138,9 @@ os.system("rm -f BIMBAM/IBS.txt")
 os.system("rm -f BIMBAM/NAT.txt")
 os.system("rm -f BIMBAM/YRI.txt")
 
-    #phenotype loop
+#phenotype loop
 for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     print("Starting analyses on " + pheno_name_rank + ".")
-    
-    IBS_file = open("BIMBAM/IBS.txt", "a+")
-    NAT_file = open("BIMBAM/NAT.txt", "a+")
-    YRI_file = open("BIMBAM/YRI.txt", "a+")
-    
-    progress_landmarks_ind = np.linspace(0, len(inds), 21, dtype = int).tolist()
-    num_ind = 0
-    
     for pop in ['NAT', 'IBS', 'YRI']:
         if args.output is not None:
             GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + pheno_name_rank + "_" + pop
