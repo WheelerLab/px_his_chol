@@ -1,5 +1,5 @@
 #"imputes" local ancestry between markers to use local ancestry as a covariate in GEMMA on a SNP-by-SNP basis
-#example input - python 19_loc_anc_to_covar.py --loc_anc local_anc_22_HCHS.csv --snpfile /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/snpfile.22
+#example input - python 19_loc_anc_to_covar.py --loc_anc local_anc_1_HCHS.csv --snpfile /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/snpfile.1
 
 import argparse
 import numpy as np
@@ -155,7 +155,7 @@ for ind in ind_list: #what part in here takes so long?
     #impute ancestry for SNPs
     hap_SNP_B = pd.concat([ind_haplotype_B, keep_SNP]).sort_values('bp')
     hap_SNP_B['haplotype'] = hap_B
-    hap_SNP_B['anc'] = hap_SNP_B['anc'].ffill().bfill() #fills NA with the closest value before and after
+    hap_SNP_B['anc'] = hap_SNP_B['anc'].bfill().ffill() #fills NA with the closest value before and after
         #try to keep it NA in between flips? but I don't know of a method that does that
             #unless I write one I guess
 
@@ -193,7 +193,7 @@ for ind in ind_list: #what part in here takes so long?
     num_ind = num_ind + 1
     if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
       progress = progress_landmarks_ind.index(num_ind)
-      print("SNP ancestry imputation and conversion is " + str(progress * 5) + "% complete.")
+      print("SNP ancestry covariate conversion is " + str(progress * 5) + "% complete.")
 
 #write list of SNPs to use in GEMMA (-snps)
 anc_dosage_write.close()
