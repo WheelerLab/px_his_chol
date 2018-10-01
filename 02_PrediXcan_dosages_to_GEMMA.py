@@ -27,7 +27,7 @@ os.system("mkdir -p anno")
 if args.local_anc_samples is not None:
     pd.read_csv(args.local_anc_samples, sep = ":", header = None)
 if args.chr is not None:
-    chrs_to_test = range(int(args.chr), int(args.chr + 1))
+    chrs_to_test = range(int(args.chr), (int(args.chr) + 1))
 else:
     chrs_to_test = range(1, 23)
 if args.local_anc_SNPs is not None:
