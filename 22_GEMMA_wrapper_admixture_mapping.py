@@ -75,17 +75,7 @@ SNP_list = SNPs['rs'].tolist()
 pheno = range(1,5)
 pheno_name = ["CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank"]
 
-#phenotype loop
-for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
-    print("Starting analyses on " + pheno_name_rank + ".")
-    
-    IBS_file = open("BIMBAM/IBS.txt", "a+")
-    NAT_file = open("BIMBAM/NAT.txt", "a+")
-    YRI_file = open("BIMBAM/YRI.txt", "a+")
-    
-    progress_landmarks_ind = np.linspace(0, len(inds), 21, dtype = int).tolist()
-    num_ind = 0
-    
+
     '''
     Okay so for whoever bothers to read this
     I tried making a large data frame and lists of lists with the dosages
@@ -96,50 +86,61 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     So I swear I tried to do it a fancier way but it's so slow with so many people
     '''
     
-    for ind in inds:
-        #iterate through cols
-        ind_df = loc_anc_cov[[ind]]
-        ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_df[ind].str.split('\t', 2).str #split each individual's column into 3
-        ind_df = ind_df.drop(ind, axis = 1).transpose().applymap(str)
-        #pull from one ancestry each
-            #assemble a BIMBAM file except it's local ancestries
-        IBS_list = ind_df.loc['IBS'].tolist()
-        NAT_list = ind_df.loc['NAT'].tolist()
-        YRI_list = ind_df.loc['YRI'].tolist()
+for ind in inds:
+    #iterate through cols
+    ind_df = loc_anc_cov[[ind]]
+    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_df[ind].str.split('\t', 2).str #split each individual's column into 3
+    ind_df = ind_df.drop(ind, axis = 1).transpose().applymap(str)
+    #pull from one ancestry each
+        #assemble a BIMBAM file except it's local ancestries
+    IBS_list = ind_df.loc['IBS'].tolist()
+    NAT_list = ind_df.loc['NAT'].tolist()
+    YRI_list = ind_df.loc['YRI'].tolist()
+    
+    IBS_file.write("\t".join(IBS_list) + "\n")
+    NAT_file.write("\t".join(NAT_list) + "\n")
+    YRI_file.write("\t".join(YRI_list) + "\n")
         
-        IBS_file.write("\t".join(IBS_list) + "\n")
-        NAT_file.write("\t".join(NAT_list) + "\n")
-        YRI_file.write("\t".join(YRI_list) + "\n")
-        
-        num_ind = num_ind + 1
+    num_ind = num_ind + 1
         if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
-            progress = progress_landmarks_ind.index(num_ind)
-            print("Individual ancestry dosage conversion is " + str(progress * 5) + "% complete.")
+        progress = progress_landmarks_ind.index(num_ind)
+        print("Individual ancestry dosage conversion is " + str(progress * 5) + "% complete.")
     
-    #so now you have dosages for each ancestry
-    IBS_file.close()
-    NAT_file.close()
-    YRI_file.close()
+#so now you have dosages for each ancestry
+IBS_file.close()
+NAT_file.close()
+YRI_file.close()
     
-    #make into BIMBAM
-    IBS_BIMBAM = pd.read_table("BIMBAM/IBS.txt", sep='\t', header = None).transpose()
-    NAT_BIMBAM = pd.read_table("BIMBAM/NAT.txt", sep='\t', header = None).transpose()
-    YRI_BIMBAM = pd.read_table("BIMBAM/YRI.txt", sep='\t', header = None).transpose()
+#make into BIMBAM
+IBS_BIMBAM = pd.read_table("BIMBAM/IBS.txt", sep='\t', header = None).transpose()
+NAT_BIMBAM = pd.read_table("BIMBAM/NAT.txt", sep='\t', header = None).transpose()
+YRI_BIMBAM = pd.read_table("BIMBAM/YRI.txt", sep='\t', header = None).transpose()
 
-    #add SNP info
-    IBS_BIMBAM = pd.concat([SNPs, IBS_BIMBAM], axis=1)
-    NAT_BIMBAM = pd.concat([SNPs, NAT_BIMBAM], axis=1)
-    YRI_BIMBAM = pd.concat([SNPs, YRI_BIMBAM], axis=1)
+#add SNP info
+IBS_BIMBAM = pd.concat([SNPs, IBS_BIMBAM], axis=1)
+NAT_BIMBAM = pd.concat([SNPs, NAT_BIMBAM], axis=1)
+YRI_BIMBAM = pd.concat([SNPs, YRI_BIMBAM], axis=1)
     
-    #write to file
-    IBS_BIMBAM.to_csv("BIMBAM/IBS.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
-    NAT_BIMBAM.to_csv("BIMBAM/NAT.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
-    YRI_BIMBAM.to_csv("BIMBAM/YRI.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
+#write to file
+IBS_BIMBAM.to_csv("BIMBAM/IBS.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
+NAT_BIMBAM.to_csv("BIMBAM/NAT.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
+YRI_BIMBAM.to_csv("BIMBAM/YRI.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
+   
+#delete intermediate files
+os.system("rm -f BIMBAM/IBS.txt")
+os.system("rm -f BIMBAM/NAT.txt")
+os.system("rm -f BIMBAM/YRI.txt")
+
+    #phenotype loop
+for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
+    print("Starting analyses on " + pheno_name_rank + ".")
     
-    #delete intermediate files
-    os.system("rm -f BIMBAM/IBS.txt")
-    os.system("rm -f BIMBAM/NAT.txt")
-    os.system("rm -f BIMBAM/YRI.txt")
+    IBS_file = open("BIMBAM/IBS.txt", "a+")
+    NAT_file = open("BIMBAM/NAT.txt", "a+")
+    YRI_file = open("BIMBAM/YRI.txt", "a+")
+    
+    progress_landmarks_ind = np.linspace(0, len(inds), 21, dtype = int).tolist()
+    num_ind = 0
     
     for pop in ['NAT', 'IBS', 'YRI']:
         if args.output is not None:
