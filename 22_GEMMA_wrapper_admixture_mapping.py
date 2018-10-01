@@ -10,9 +10,7 @@ pd.options.mode.chained_assignment = None
 
 parser = argparse.ArgumentParser()
 #novel-ish part of using GEMMA
-parser.add_argument("--snplist", type = str, action = "store", dest = "snplist", required = True, help = "Path to file containing a list of SNPs to be included in analysis (output of 19_loc_anc.py).")
 parser.add_argument("--snptable", type = str, action = "store", dest = "snptable", required = True, help = "Path to file containing the .csv output of 19_loc_anc.py")
-parser.add_argument("--ind_list", type = str, action = "store", dest = "ind_list", required = True, help = "Path to file containing individuals in the analysis (output of 19_loc_anc.py).")
 
 #established part of using GEMMA
 parser.add_argument("--relatedness", type = str, action = "store", dest = "relatedness", required = True, help = "Path to file containing relatedness matrix w/o IIDs for only individuals in analysis.")
@@ -53,7 +51,6 @@ anno = " -a anno/anno1.txt "
 pheno_file = "pheno_chr1.txt"
 relatedness = "relatedness_chr1.txt"
 
-SNPs = np.loadtxt("MOSAIC_for_GEMMA_1_snps.txt", dtype = 'string')#, engine='python')
 loc_anc_cov = pd.read_csv("MOSAIC_for_GEMMA_1.csv", delimiter=',', encoding="utf-8-sig")
 BIMBAM = pd.read_table(BIMBAM_file, compression='gzip', sep='\t', header = None, index_col = 0)
 
