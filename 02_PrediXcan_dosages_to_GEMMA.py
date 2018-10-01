@@ -26,6 +26,8 @@ os.system("mkdir -p anno")
 
 if args.local_anc_samples is not None:
     pd.read_csv(args.local_anc_samples, sep = ":", header = None)
+if args.chr is None:
+    chrs_to_test = range(1, 23)
 if args.chr is not None:
     chrs_to_test = range(int(args.chr), (int(args.chr) + 1))
 else:
@@ -52,7 +54,7 @@ if args.local_anc_samples is not None:
     local_anc_samples = local_anc_samples.set_index(1)
 
 print("Starting conversion from PLINK dosage to GEMMA input BIMBAM and anno.")
-for i in range(1, 23):
+for i in chrs_to_test:
     anno = open(anno_path + "anno" + str(i) + ".txt", "w")
     BIMBAM = gzip.open(BIMBAM_path + "chr" + str(i) + ".txt.gz", "wb")
     for line in gzip.open(dosage_path + "chr" + str(i) + ".maf0.01.r20.8.dosage.txt.gz", "rb"):
