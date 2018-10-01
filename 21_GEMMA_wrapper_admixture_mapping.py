@@ -5,7 +5,6 @@ import argparse
 import numpy as np
 import pandas as pd
 import os
-import time
 pd.options.mode.chained_assignment = None
 
 parser = argparse.ArgumentParser()
@@ -77,6 +76,15 @@ pheno_name = ["CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank"]
 
 #phenotype loop
 for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
+    '''
+    Okay so for whoever bothers to read this
+    I tried making a large data frame and lists of lists with the dosages
+    However, this made the addition time for each individual raise incrementally
+    And that's not good for 12,000 people
+    So, I write each dosage as a line into a file individually so the addition time is constant
+    And then read that all back in and add the BIMBAM information
+    So I swear I tried to do it a fancier way but it's so slow with so many people
+    '''
     print("Starting analyses on " + pheno_name_rank + ".")
     
     IBS_file = open("BIMBAM/IBS.txt", "a+")
@@ -85,6 +93,7 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     
     progress_landmarks_ind = np.linspace(0, len(inds), 21, dtype = int).tolist()
     num_ind = 0
+    
     for ind in inds:
         #iterate through cols
         ind_df = loc_anc_cov[[ind]]
@@ -99,7 +108,6 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
         IBS_file.write("\t".join(IBS_list) + "\n")
         NAT_file.write("\t".join(NAT_list) + "\n")
         YRI_file.write("\t".join(YRI_list) + "\n")
-        #making one big dataframe doesn't have constant time addition so I'd rather be safe than sorry/have a memory error
         
         num_ind = num_ind + 1
         if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
@@ -133,10 +141,10 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     
     for pop in ['NAT', 'IBS', 'YRI']:
         if args.output is not None:
-            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + pheno_name_rank + "_" + pop
+            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + pheno_name_rank + "_" + pop
             os.system(GEMMA_command + " >> GEMMA_log.txt")
         else:
-            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + args.output + "_" + pheno_name_rank + "_" + pop
+            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + args.output + "_" + pheno_name_rank + "_" + pop
             os.system(GEMMA_command + " >> GEMMA_log.txt")
     print("Ending analyses on " + pheno_name_rank + ".")
 print("Analyses in all phenotypes is complete. Have a nice day :)!")
