@@ -27,7 +27,9 @@ chr = 1
 '''
 
 for chr in range(1, 23):
-    print("Starting processes on chromosome" + str(chr) + ".")
+    print("Starting processes on chromosome " + str(chr) + ".")
+    print(input_path + phind_prefix + str(chr) + ".phind")
+    print(input_path + genofile_prefix + "." + str(chr))
     phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
     all_inds = list(phind[0])
     genofile = pd.read_table(input_path + genofile_prefix + "." + str(chr), header = None, error_bad_lines = False)
