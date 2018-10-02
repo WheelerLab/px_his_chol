@@ -140,11 +140,11 @@ os.system("rm -f BIMBAM/YRI.txt")
 for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     print("Starting analyses on " + pheno_name_rank + ".")
     for pop in ['NAT', 'IBS', 'YRI']:
-        if args.output is not None:
-            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + pheno_name_rank + "_" + pop
+        if args.output is not None: #notsnp is b/c some dosages are v sparse
+            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + pheno_name_rank + "_" + pop
             os.system(GEMMA_command + " >> GEMMA_log.txt")
         else:
-            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -o " + args.output + "_" + pheno_name_rank + "_" + pop
+            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + args.output + "_" + pheno_name_rank + "_" + pop
             os.system(GEMMA_command + " >> GEMMA_log.txt")
     print("Ending analyses on " + pheno_name_rank + ".")
 print("Analyses in all phenotypes is complete. Have a nice day :)!")
