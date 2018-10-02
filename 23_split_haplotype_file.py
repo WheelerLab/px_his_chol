@@ -32,10 +32,14 @@ for chr in range(1, 23):
     print(input_path + genofile_prefix + "." + str(chr))
     phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
     all_inds = list(phind[0])
-    genofile = pd.read_table(input_path + genofile_prefix + "." + str(chr), header = None, error_bad_lines = False)
-        #no built in separator so gotta do it myself
-        
-        #split into each character because no delimiters
+    genofile_chunks = []
+    for chunk in pd.read_table(input_path + genofile_prefix + "." + str(chr), header = None, chunksize = 20000):
+        genofile_chunks.append(chunk) #when your data too thicc
+    #no built in separator so gotta do it myself
+    genofile = pd.concat(genofile_chunks, axis = 0)
+    del genofile_chunks
+    
+    #split into each character because no delimiters
     haplotypes = []
     for genofile_row in genofile.itertuples():
         haplotypes.append(list(genofile_row[1]))
