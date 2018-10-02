@@ -10,9 +10,7 @@ pd.options.mode.chained_assignment = None
 
 parser = argparse.ArgumentParser()
 #novel-ish part of using GEMMA
-parser.add_argument("--snplist", type = str, action = "store", dest = "snplist", required = True, help = "Path to file containing a list of SNPs to be included in analysis (output of 19_loc_anc.py).")
 parser.add_argument("--snptable", type = str, action = "store", dest = "snptable", required = True, help = "Path to file containing the .csv output of 19_loc_anc.py")
-parser.add_argument("--ind_list", type = str, action = "store", dest = "ind_list", required = True, help = "Path to file containing individuals in the analysis (output of 19_loc_anc.py).")
 
 #established part of using GEMMA
 parser.add_argument("--relatedness", type = str, action = "store", dest = "relatedness", required = True, help = "Path to file containing relatedness matrix w/o IIDs for only individuals in analysis.")
@@ -24,7 +22,6 @@ parser.add_argument("--output", type = str, action = "store", dest = "output", r
 args = parser.parse_args()
 
 print("Reading input files.")
-SNPs = np.loadtxt(args.snplist, dtype = 'string')#, engine='python')
 loc_anc_cov = pd.read_csv(args.snptable, delimiter=',', encoding="utf-8-sig")
 #region = pd.read_table(args.region, delim_whitespace = True, dtype = {'region':object})
 if args.BIMBAM.endswith(".gz"):
