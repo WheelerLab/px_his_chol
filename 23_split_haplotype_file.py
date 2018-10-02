@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--input_path", type = str, action = "store", dest = "input_path", required = True, help = "Path to folder containing input for MOSAIC")
+parser.add_argument("--input_path", type = str, action = "store", dest = "input_path", required = False, default = "", help = "Path to folder containing input for MOSAIC")
 parser.add_argument("--phind_prefix", type = str, action = "store", dest = "phind_prefix", required = False, default = "HCHS_chr", help = "(Optional) prefix of MOSAIC phind input")
 parser.add_argument("--genofile_prefix", type = str, action = "store", dest = "genofile_prefix", required = False, default = "HCHSgenofile", help = "(Optional) prefix of MOSAIC genofile input")
 parser.add_argument("--output_path", type = str, action = "store", dest = "output_path", required = False, default = "output/", help = "(Optional) folder to output to")
@@ -50,3 +50,4 @@ for chr in range(1, 23):
         #write to chunks    
         ind_chunk_genofile.to_csv(output_path + genofile_prefix + str(ind_chunk) + "." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
         ind_chunk_phind.to_csv(output_path + phind_prefix + str(chr) + "_" + str(ind_chunk) + ".phind", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
+        
