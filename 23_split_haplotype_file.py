@@ -11,6 +11,7 @@ parser.add_argument("--output_path", type = str, action = "store", dest = "outpu
 parser.add_argument("--num_splits", type = str, action = "store", dest = "num_splits", required = False, default = "12", help = "Number of splits to make")
 args = parser.parse_args()
 
+print("Reading in input.")
 input_path = args.input_path
 phind_prefix = args.phind_prefix
 genofile_prefix = args.genofile_prefix
@@ -26,9 +27,10 @@ chr = 1
 '''
 
 for chr in range(1, 23):
+    print("Starting processes on chromosome" + str(chr) + ".")
     phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
     all_inds = list(phind[0])
-    genofile = pd.read_table(input_path + genofile_prefix + "." + str(chr), header = None)
+    genofile = pd.read_table(input_path + genofile_prefix + "." + str(chr), header = None, error_bad_lines = False)
         #no built in separator so gotta do it myself
         
         #split into each character because no delimiters
@@ -52,5 +54,5 @@ for chr in range(1, 23):
         #write to chunks    
         ind_chunk_genofile.to_csv(output_path + genofile_prefix + str(ind_chunk) + "." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
         ind_chunk_phind.to_csv(output_path + phind_prefix + str(chr) + "_" + str(ind_chunk) + ".phind", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
-   
+        print("Complete with chunk " + str(ind_chunk + 1) + ".")
     
