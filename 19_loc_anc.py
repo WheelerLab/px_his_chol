@@ -4,6 +4,7 @@
 import argparse
 import numpy as np
 import pandas as pd
+import os
 
 #unnote when out of testing
 parser = argparse.ArgumentParser()
@@ -196,8 +197,9 @@ for ind in ind_list: #what part in here takes so long?
 
 #write list of SNPs to use in GEMMA (-snps)
 anc_dosage_write.close()
-ind_file = open(output_prefix + "_" + str(chr) + "_ind.txt", "w")
-ind_file.write("\n".join(ind_list))
-ind_file.close()
+
+#make list of inds to use in future analyses
+os.system("cut -d, -f1 " + output_prefix + "_" + str(chr) + ".csv > " + output_prefix + "_" + str(chr) + "_ind.txt")
+os.system("sed '1d' " + output_prefix + "_" + str(chr) + "_ind.txt > tmpfile.txt; mv tmpfile.txt " + output_prefix + "_" + str(chr) + "_ind.txt")
 print("Completed writing individual and SNP ancestry file to " + output_prefix + "_" + str(chr) + "_ind.txt, and " + output_prefix + "_" + str(chr) + ".csv. Have a nice day!")
    
