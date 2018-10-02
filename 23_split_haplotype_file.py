@@ -18,14 +18,15 @@ output_path = args.output_path
 '''
 input_path = ""
 phind_prefix = "HCHS_chr"
-genotype_prefix = "HCHSgenofile"
+genofile_prefix = "HCHSgenofile"
 output_path = "output/"
+chr = 1
 '''
 
 for chr in range(1, 23):
-    phind = pd.read_table("HCHS_chr" + str(chr) + ".phind", header = None, delim_whitespace = True)
+    phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
     all_inds = list(phind[0])
-    genofile = pd.read_table("test_1000_genofile." + str(chr), header = None)
+    genofile = pd.read_table(input_path + genofile_prefix + "." + str(chr), header = None)
         #no built in separator so gotta do it myself
         
         #split into each character because no delimiters
@@ -47,7 +48,5 @@ for chr in range(1, 23):
         ind_chunk_phind = phind.loc[phind[0].isin(ind_chunk_include)]
 
         #write to chunks    
-        ind_chunk_genofile.to_csv("test_" + str(ind_chunk) + "genofile." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
-        ind_chunk_phind.to_csv("test_" + str(ind_chunk) + "_" + str(chr) + ".phind", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
-   
-    
+        ind_chunk_genofile.to_csv(output_path + genofile_prefix + str(ind_chunk) + "." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
+        ind_chunk_phind.to_csv(output_path + phind_prefix + str(chr) + "_" + str(ind_chunk) + ".phind", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
