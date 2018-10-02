@@ -5,15 +5,17 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--input_path", type = str, action = "store", dest = "input_path", required = False, default = "", help = "Path to folder containing input for MOSAIC")
-parser.add_argument("--phind_prefix", type = str, action = "store", dest = "phind_prefix", required = False, default = "HCHS_chr", help = "(Optional) prefix of MOSAIC phind input")
-parser.add_argument("--genofile_prefix", type = str, action = "store", dest = "genofile_prefix", required = False, default = "HCHSgenofile", help = "(Optional) prefix of MOSAIC genofile input")
-parser.add_argument("--output_path", type = str, action = "store", dest = "output_path", required = False, default = "output/", help = "(Optional) folder to output to")
+parser.add_argument("--phind_prefix", type = str, action = "store", dest = "phind_prefix", required = False, default = "HCHS_chr", help = "Prefix of MOSAIC phind input")
+parser.add_argument("--genofile_prefix", type = str, action = "store", dest = "genofile_prefix", required = False, default = "HCHSgenofile", help = "Rrefix of MOSAIC genofile input")
+parser.add_argument("--output_path", type = str, action = "store", dest = "output_path", required = False, default = "", help = "Folder to output to")
+parser.add_argument("--num_splits", type = str, action = "store", dest = "num_splits", required = False, default = "12", help = "Number of splits to make")
 args = parser.parse_args()
 
 input_path = args.input_path
 phind_prefix = args.phind_prefix
 genofile_prefix = args.genofile_prefix
 output_path = args.output_path
+num_splits = int(args.num_splits)
 
 '''
 input_path = ""
@@ -37,7 +39,7 @@ for chr in range(1, 23):
     haplotypes.columns = all_inds
 
     #okay so now we have a dataframe of haplotypes
-    split_inds = np.array_split(all_inds, 12) #is about 2k reasonable?
+    split_inds = np.array_split(all_inds, num_splits) #is about 2k reasonable?
     for ind_chunk in range(0, len(split_inds)):
         #subset to within chunks
         ind_chunk_include = split_inds[ind_chunk].tolist()
@@ -50,4 +52,5 @@ for chr in range(1, 23):
         #write to chunks    
         ind_chunk_genofile.to_csv(output_path + genofile_prefix + str(ind_chunk) + "." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
         ind_chunk_phind.to_csv(output_path + phind_prefix + str(chr) + "_" + str(ind_chunk) + ".phind", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
-        
+   
+    
