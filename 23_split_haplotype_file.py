@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 01 20:48:02 2018
-
-@author: Angela
-"""
+#haplotype files are too large and causing severe memory issues in MOSAIC, so splitting them up into 12 sections
 
 import numpy as np
 import pandas as pd
