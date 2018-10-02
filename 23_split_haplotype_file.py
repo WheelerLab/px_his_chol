@@ -28,8 +28,6 @@ chr = 1
 
 for chr in range(1, 23):
     print("Starting processes on chromosome " + str(chr) + ".")
-    print(input_path + phind_prefix + str(chr) + ".phind")
-    print(input_path + genofile_prefix + "." + str(chr))
     phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
     all_inds = list(phind[0])
     genofile_chunks = []
@@ -58,7 +56,7 @@ for chr in range(1, 23):
         ind_chunk_phind = phind.loc[phind[0].isin(ind_chunk_include)]
 
         #write to chunks    
-        ind_chunk_genofile.to_csv(output_path + genofile_prefix + str(ind_chunk) + "." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
-        ind_chunk_phind.to_csv(output_path + phind_prefix + str(chr) + "_" + str(ind_chunk) + ".phind", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
+        ind_chunk_genofile.to_csv(output_path + str(ind_chunk) + "_" + genofile_prefix + "." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
+        ind_chunk_phind.to_csv(output_path + str(ind_chunk) + "_" + phind_prefix + str(chr) + ".phind", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
         print("Complete with chunk " + str(ind_chunk + 1) + ".")
     
