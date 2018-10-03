@@ -76,9 +76,9 @@ for chr in range(1, 23):
         os.system("cp " + input_path + "IBS_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         os.system("cp " + input_path + "NAT_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         os.system("cp " + input_path + "YRI_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
-        os.system("cp " + input_path + "IBSgenofile." + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
-        os.system("cp " + input_path + "NATgenofile." + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
-        os.system("cp " + input_path + "YRIgenofile" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        os.system("cp " + input_path + "IBSgenofile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        os.system("cp " + input_path + "NATgenofile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        os.system("cp " + input_path + "YRIgenofile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         
         #write to chunks    
         ind_chunk_genofile.to_csv(output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/" + genofile_prefix + "." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
