@@ -37,8 +37,8 @@ ref_samples = good = [sample for sample in sample_names if sample != pop_name]
 
 for chr in range(1, 23):
     print("Starting processes on chromosome " + str(chr) + ".")
-    phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
-    all_inds = list(phind[0])
+    #phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
+    #all_inds = list(phind[0])
     genofile_chunks = []
     for chunk in pd.read_table(input_path + genofile_prefix + "." + str(chr), header = None, chunksize = 20000):
         genofile_chunks.append(chunk) #when your data too thicc
@@ -72,10 +72,10 @@ for chr in range(1, 23):
         os.system("cp " + input_path + "snpfile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         os.system("cp " + input_path + "rates." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         
-        #and need all ancestries
-        os.system("cp " + input_path + "IBS_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
-        os.system("cp " + input_path + "NAT_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
-        os.system("cp " + input_path + "YRI_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        #and need all ancestries (jk didn't need .phind after all)
+        #os.system("cp " + input_path + "IBS_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        #os.system("cp " + input_path + "NAT_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        #os.system("cp " + input_path + "YRI_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         os.system("cp " + input_path + "IBSgenofile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         os.system("cp " + input_path + "NATgenofile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         os.system("cp " + input_path + "YRIgenofile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
