@@ -73,9 +73,17 @@ for chr in range(1, 23):
         os.system("cp " + input_path + "snpfile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         os.system("cp " + input_path + "rates." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         
+        #and need all ancestries files to run MOSAIC smoothly
+        os.system("cp " + input_path + "IBS_chr" + str(chr) + "*" + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        os.system("cp " + input_path + "NAT_chr" + str(chr) + "*" + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        os.system("cp " + input_path + "YRI_chr" + str(chr) + "*" + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        os.system("cp " + input_path + "IBSgenofile." + str(chr) + "*" + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        os.system("cp " + input_path + "NATgenofile." + str(chr) + "*" + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        os.system("cp " + input_path + "YRIgenofile" + str(chr) + "*" + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
+        
         #write to chunks    
         ind_chunk_genofile.to_csv(output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/" + genofile_prefix + "." + str(chr), sep = ",", na_rep = "NA", header = False, index = False)
         ind_chunk_phind.to_csv(output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/" + phind_prefix + str(chr) + ".phind", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f')
         ind_chunk_sample_names.to_csv(output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/sample.names", sep = ",", na_rep = "NA", header = False, index = False)
         print("Complete with chunk " + str(ind_chunk + 1) + ".")
-    
+   
