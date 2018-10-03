@@ -37,8 +37,8 @@ ref_samples = good = [sample for sample in sample_names if sample != pop_name]
 
 for chr in range(1, 23):
     print("Starting processes on chromosome " + str(chr) + ".")
-    #phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
-    #all_inds = list(phind[0])
+    phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
+    all_inds = list(phind[0])
     genofile_chunks = []
     for chunk in pd.read_table(input_path + genofile_prefix + "." + str(chr), header = None, chunksize = 20000):
         genofile_chunks.append(chunk) #when your data too thicc
