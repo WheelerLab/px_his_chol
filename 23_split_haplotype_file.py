@@ -72,7 +72,7 @@ for chr in range(1, 23):
         os.system("cp " + input_path + "snpfile." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         os.system("cp " + input_path + "rates." + str(chr) + " " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         
-        #and need all ancestries (jk didn't need .phind after all)
+        #and need all ancestries
         #os.system("cp " + input_path + "IBS_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         #os.system("cp " + input_path + "NAT_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
         #os.system("cp " + input_path + "YRI_chr" + str(chr) + "* " + output_path + "chr" + str(chr) + "_" + str(ind_chunk) + "/")
