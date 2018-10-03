@@ -63,7 +63,7 @@ for chr in range(1, 23):
         ind_chunk_genofile = pd.DataFrame(ind_chunk_genofile.astype(str).apply(''.join)) #since to_csv() doesn't like running without a delimiter, we cheat a bit
         ind_chunk_genofile_l = ind_chunk_genofile.values.tolist()
         ind_chunk_phind = phind.loc[phind[0].isin(ind_chunk_include)]
-        ind_chunk_sample_names = ref_samples.copy()
+        ind_chunk_sample_names = list(ref_samples)
         ind_chunk_sample_names.extend([pop_name] * len(ind_chunk_include))
         ind_chunk_sample_names = pd.DataFrame(ind_chunk_sample_names)
 
