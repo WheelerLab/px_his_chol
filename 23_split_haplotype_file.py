@@ -35,6 +35,12 @@ ind_chunk = 0
 sample_names = np.loadtxt(input_path + "sample.names", dtype = str).tolist()
 ref_samples = good = [sample for sample in sample_names if sample != pop_name]
 
+def chunks(l, n): #thanks person on stack overflow - https://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks
+    # For item i in a range that is a length of l,
+    for i in range(0, len(l), n):
+        # Create an index range for l of n items:
+        yield l[i:i+n]
+
 for chr in range(1, 23):
     print("Starting processes on chromosome " + str(chr) + ".")
     phind = pd.read_table(input_path + phind_prefix + str(chr) + ".phind", header = None, delim_whitespace = True)
@@ -54,8 +60,7 @@ for chr in range(1, 23):
     haplotypes.columns = all_inds
 
     #okay so now we have a dataframe of haplotypes
-    #split_inds = np.array_split(all_inds, num_splits) #is about 2k reasonable?
-    split_inds = split_inds.reshape(-1, 200)
+    split_inds = list(chunks(all_inds, 500))
     for ind_chunk in range(0, len(split_inds)):
         #subset to within chunks
         ind_chunk_include = split_inds[ind_chunk].tolist()
