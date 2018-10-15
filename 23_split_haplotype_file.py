@@ -1,4 +1,4 @@
-#MOSAIC input with all haplotypes is too large, so this program chunks the ~24k haplotypes into 12 equal chunks for an easier time on the memory
+#MOSAIC input with all haplotypes is too large, so this program chunks the ~24k haplotypes into 25 equal chunks for an easier time on the memory
 import argparse
 import numpy as np
 import pandas as pd
@@ -28,7 +28,7 @@ genofile_prefix = "HCHSgenofile"
 output_path = "output/"
 pop_name = "HCHS"
 chr = 1
-num_splits = 12
+num_splits = 25
 ind_chunk = 0
 '''
 #for writing sample.names for each chunk
