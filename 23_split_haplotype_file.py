@@ -54,7 +54,8 @@ for chr in range(1, 23):
     haplotypes.columns = all_inds
 
     #okay so now we have a dataframe of haplotypes
-    split_inds = np.array_split(all_inds, num_splits) #is about 2k reasonable?
+    #split_inds = np.array_split(all_inds, num_splits) #is about 2k reasonable?
+    split_inds = split_inds.reshape(-1, 200)
     for ind_chunk in range(0, len(split_inds)):
         #subset to within chunks
         ind_chunk_include = split_inds[ind_chunk].tolist()
