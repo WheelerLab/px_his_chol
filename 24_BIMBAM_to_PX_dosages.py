@@ -1,3 +1,4 @@
+#converts from BIMBAM format (comma delimited) to PrediXcan dosage format
 from __future__ import division #because python 2 doesn't like real numbers
 import argparse #allows for input of command line arguments
 parser = argparse.ArgumentParser() #open the parser
