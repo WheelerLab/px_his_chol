@@ -45,7 +45,9 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 * 22_GEMMA_wrapper_admixture_mapping.py: uses local ancestry as a dosage to run an ancestry-by-ancestry level admixture mapping analysis
 
-* 23_split_haplotype_file.py: MOSAIC input with all haplotypes is too large, so this program chunks the ~24k haplotypes into 12 equal chunks for an easier time on the memory
+* *23_split_haplotype_file.py: MOSAIC input with all haplotypes is too large, so this program chunks the ~24k haplotypes into 12 equal chunks for an easier time on the memory
+
+* 24_BIMBAM_to_PX_dosages.py: converts from BIMBAM format (comma delimited) to PrediXcan dosage format
 
 *depreciated and not used for final analysis
 
