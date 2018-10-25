@@ -24,7 +24,10 @@ for anno_line, BIMBAM_line in zip(anno, BIMBAM): #go through each line in anno a
     (rs_BIMBAM, A1, A2) = B_line[0:3] #assign first part of BIMBAM into variable
     dosages = B_line[4:] #assign last part of BIMBAM to a list
     float_dosages = [float(dosage) for dosage in dosages] #convert each dosage into floats
-    MAF = str(sum(float_dosages)/(len(dosages) * 2)) #calculate minor allele frequency (I hope the math is correct)
+    MAF = sum(float_dosages)/(len(dosages) * 2) #calculate minor allele frequency (I hope the math is correct)
+    if MAF > 0.5: #if minor allele frequency is the other allele
+        MAF = 1 - MAF #take the complement (is that the right use of the word complement?)
+    MAF = str(MAF) #convert to string b/c Python doesn't like when you concatenate strings and numbers later
     dosages_str = "\t".join(dosages) #create string of dosages separate by tabs
     if rs_anno == rs_BIMBAM: #if the rs in anno and the rs in BIMBAM match, which they always should
         dosage_format = (chr + "\t" + rs_anno + "\t" + bp + "\t" + A1 + "\t" + A2 + "\t" + MAF + "\t" + dosages_str + "\n") #make all variables into PrediXcan dosage format
