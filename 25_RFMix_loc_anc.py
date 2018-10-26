@@ -53,6 +53,9 @@ anc_dosage_write = open(output_prefix + ".csv", "a+")
 anc_dosage_write.write("IID," + ",".join(SNPs) + "\n")
 progress_landmarks_ind = np.linspace(0, len(ind_list), 21, dtype = int).tolist()
 num_ind = 0
+SNP_file = open(output_prefix + "_SNPs.txt", "w") #to be used in subsetting GEMMA input
+SNP_file.write("\n".join(SNPs))
+SNP_file.close()
 
 for ind in ind_list:
     #Extract haplotypes
@@ -101,8 +104,8 @@ for ind in ind_list:
       print("SNP ancestry dosage conversion is " + str(progress * 5) + "% complete.")
 anc_dosage_write.close() #yay we're done!
 
-#make list of inds to use in future analyses and we're gonna use bash cause I feel fancy
+#make list of inds to use in future analyses (aka GEMMA input subsetting) and we're gonna use bash cause I feel fancy
 os.system("cut -d, -f1 " + output_prefix + ".csv > " + output_prefix + "_ind.txt")
 os.system("sed '1d' " + output_prefix + "_ind.txt > tmpfile.txt; mv tmpfile.txt " + output_prefix + "_ind.txt")
-print("Completed writing individual and SNP ancestry dosage file to " + output_prefix + "_ind.txt, and " + output_prefix + ".csv. Have a nice day!")
+print("Completed writing individual, SNP, and SNP ancestry dosage file to " + output_prefix + "_ind.txt, " + output_prefix + "_SNPs.txt and " + output_prefix + ".csv. Have a nice day!")
    
