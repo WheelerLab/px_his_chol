@@ -24,12 +24,21 @@ args = parser.parse_args()
 print("Reading input files.")
 loc_anc_cov = pd.read_csv(args.snptable, delimiter=',', encoding="utf-8-sig")
 if args.BIMBAM.endswith(".gz"):
-    BIMBAM = pd.read_table(args.BIMBAM, compression='gzip', sep='\t', header = None, index_col = 0)
+    BIMBAM_chunks = []
+    for chunk in pd.read_table(args.BIMBAM, compression='gzip', sep='\t', header = None, index_col = 0, chunksize = 20000):
+        BIMBAM_chunks.append(chunk) #when your data too thicc
+    BIMBAM = pd.concat(BIMBAM_chunks, axis = 0).transpose()
+    del BIMBAM_chunks
+    del chunk
 else:
-    BIMBAM = pd.read_table(args.BIMBAM, header = None, index_col = 0)
+    BIMBAM_chunks = []
+    for chunk in pd.read_table(args.BIMBAM, compression='gzip', sep='\t', header = None, index_col = 0, chunksize = 20000):
+        BIMBAM_chunks.append(chunk) #when your data too thicc
+    BIMBAM = pd.concat(BIMBAM_chunks, axis = 0).transpose()
+    del BIMBAM_chunks
+    del chunk
 
 #following are just to be used in GEMMA input
-BIMBAM_file = args.BIMBAM
 covariates_file = args.covariates
 if args.anno is None:
     anno = " "
