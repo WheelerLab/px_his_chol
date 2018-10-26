@@ -1,7 +1,7 @@
 #uses local ancestry as a dosage to run an ancestry-by-ancestry level admixture mapping analysis.
-#all input except for genotypes must be already in GEMMA format
-#cd /home/angela/px_his_chol/local_anc_GEMMA/MOSAIC_RESULTS/
-#python 21_GEMMA_wrapper_admixture_mapping.py --snplist MOSAIC_for_GEMMA_1_snps.txt --snptable MOSAIC_for_GEMMA_1.csv --ind_list MOSAIC_for_GEMMA_1_ind.txt --BIMBAM BIMBAM/chr1.txt.gz --anno anno/anno1.txt --pheno pheno_chr1.txt --relatedness relatedness_chr1.txt --covariate covariates_chr1.txt --output chr1
+#all input except for genotypes must be already in GEMMA format, and if some individuals and/or SNPs got removed, use 02_PrediXcan_dosages_to_GEMMA.py and 21_make_GEMMA_input.R to make input proper again
+#cd /home/angela/px_his_chol/local_anc_GEMMA/RFMix_output/
+#python 22_GEMMA_wrapper_admixture_mapping.py --BIMBAM BIMBAM/chr22.txt.gz --anno anno/anno22.txt --relatedness relatedness.txt --pheno pheno.txt --covariates covariates.txt --snptable RFMix_for_GEMMA_22.csv --output chr22
 import argparse
 import numpy as np
 import pandas as pd
