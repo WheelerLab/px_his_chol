@@ -73,7 +73,8 @@ for i in chrs_to_test:
                     dosages = dosages[0].tolist()
                 else:
                     dosages = arr[6:]
-            
+                
+                dosages = [str(dosage) for dosage in dosages]
                 dosages_str = '\t'.join(dosages)
                 BIMBAM_format = (rs + "\t" + A1 + "\t" + A2 + "\t" + dosages_str + "\n")
                 BIMBAM.write(BIMBAM_format)
@@ -90,6 +91,7 @@ for i in chrs_to_test:
             else:
                 dosages = arr[6:]
                 
+                dosages = [str(dosage) for dosage in dosages]
                 dosages_str = '\t'.join(dosages)
                 BIMBAM_format = (rs + "\t" + A1 + "\t" + A2 + "\t" + dosages_str + "\n")
                 BIMBAM.write(BIMBAM_format)
