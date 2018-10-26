@@ -1,55 +1,19 @@
 #Personal version of https://github.com/armartin/ancestry_pipeline
-#Using MOSAIC instead of RFMix
-#RUN ALL CHRS
+#Phasing w/ HAPI-UR and local ancestry inference w/ RFMix
 for i in {1..22};
 do
-
-##NAT
   #1. Extract chr with PLINK
-  cd /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/
-  /usr/local/bin/plink --bfile 1000G_HCHS_geno_0.01_maf_0.05_ordered --keep NAT.txt --chr ${i} --make-bed --out NAT_chr${i}
+  cd /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/
+  /usr/local/bin/plink --bfile 1000G_HCHS_geno_0.01_maf_0.05_ordered --chr ${i} --make-bed --out chr${i}
+
   #2. Phase w/ HAPI-UR
-  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p NAT_chr${i} -w 64 -o NAT_chr${i}
-  #3. Rename HAPI-UR output for MOSAIC input
-  mv NAT_chr${i}.phgeno NATgenofile.${i}
-  printf ":sites:" > rates.${i}
-  wc -l < NATgenofile.${i} >> rates.${i} #add number of sites
-  mv NAT_chr${i}.phsnp snpfile.${i}
-  awk '{print $4}' snpfile.${i} | paste -sd ' ' >> rates.${i} #add row of positions
-  awk '{print $3}' snpfile.${i} | paste -sd ' ' >> rates.${i} #add row of cM
-  
-##IBS
-  #4. Extract chr with PLINK
-  /usr/local/bin/plink --bfile 1000G_HCHS_geno_0.01_maf_0.05_ordered --keep IBS.txt --chr ${i} --make-bed --out IBS_chr${i}
-  #5. Phase w/ HAPI-UR
-  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p IBS_chr${i} -w 64 -o IBS_chr${i}
-  #6. Rename HAPI-UR output for MOSAIC input
-  mv IBS_chr${i}.phgeno IBSgenofile.${i}
-  
-##YRI
-  #7. Extract chr with PLINK
-  /usr/local/bin/plink --bfile 1000G_HCHS_geno_0.01_maf_0.05_ordered --keep YRI.txt --chr ${i} --make-bed --out YRI_chr${i}
-  #8. Phase w/ HAPI-UR
-  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p YRI_chr${i} -w 64 -o YRI_chr${i}
-  #9. Rename HAPI-UR output for MOSAIC input
-  mv YRI_chr${i}.phgeno YRIgenofile.${i}
-  
-##HCHS
-  #10. Extract chr with PLINK
-  /usr/local/bin/plink --bfile 1000G_HCHS_geno_0.01_maf_0.05_ordered --keep HCHS.txt --chr ${i} --make-bed --out HCHS_chr${i}
-  
-  #FOR TESTING PURPOSES KEEP SMALL SUBSET
-  #/usr/local/bin/plink --bfile HCHS_chr${i} --thin-indiv-count 100 --make-bed --out HCHS_chr${i}
-  
-  #11. Phase w/ HAPI-UR
-  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p HCHS_chr${i} -w 64 -o HCHS_chr${i}
-  #12. Rename HAPI-UR output for MOSAIC input
-  mv HCHS_chr${i}.phgeno HCHSgenofile.${i}
+  /home/angela/px_his_chol/HAPI-UR/hapi-ur-1.01/hapi-ur -p chr${i} -w 111 -o phase_chr${i}
+
+  #3. Make additional files for RFMix input
+  awk '{print $3}' phase_chr${i}.phsnp > phase_chr${i}.snp_locations
+  /usr/bin/Rscript /home/angela/px_his_chol/ancestry_pipeline/make_classes_from_HAPI-UR.R /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/phase_chr${i}.phind /home/angela/px_his_chol/ancestry_pipeline/HCHS/ordered_pops.txt HCHS
+
+  #4. Local ancestry inference w/ RFMix
+  cd /home/angela/px_his_chol/RFMix/RFMix_v1.5.4/ #requires being run within RFMix folder
+  /home/angela/anaconda2/bin/python RunRFMix.py PopPhased /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/phase_chr${i}.phgeno /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/HCHS.classes /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/phase_chr${i}.snp_locations --output-name /home/angela/px_his_chol/local_anc_GEMMA/RFMix_output/chr${i} -n 5 --num-threads 15 --window-size 0.025
 done
-
-##Run MOSAIC
-  mkdir -p MOSAIC_RESULTS #why doesn't MOSAIC automatically make these
-  mkdir -p MOSAIC_PLOTS
-  /usr/bin/Rscript /home/angela/px_his_chol/MOSAIC/mosaic.R HCHS /home/angela/px_his_chol/ancestry_pipeline/HCHS/no_NativeAmerican-h/PrediXcan_SNPs/sep_pops/ -a 3 -n 24000 -c 1:22
-
-#how in the world do you read MOSAIC output
