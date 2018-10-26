@@ -103,6 +103,7 @@ for ind in inds:
     #iterate through cols
     ind_df = loc_anc_cov[[ind]] 
     print(ind_df)
+    ind_df.set_index('IID')
     ind_df.columns = ['dosages']
     ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_df.dosages.str.split('\t', 2).str #split each individual's column into 3
     ind_df = ind_df.drop(ind, axis = 1).transpose().applymap(str)
