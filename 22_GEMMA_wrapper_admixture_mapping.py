@@ -138,7 +138,7 @@ IBS_BIMBAM = pd.concat([SNPs, IBS_BIMBAM], axis=1)
 NAT_BIMBAM = pd.concat([SNPs, NAT_BIMBAM], axis=1)
 YRI_BIMBAM = pd.concat([SNPs, YRI_BIMBAM], axis=1)
     
-#write to file
+#write to file 
 IBS_BIMBAM.to_csv("BIMBAM/IBS.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
 NAT_BIMBAM.to_csv("BIMBAM/NAT.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
 YRI_BIMBAM.to_csv("BIMBAM/YRI.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
