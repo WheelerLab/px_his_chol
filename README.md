@@ -29,15 +29,15 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 * 14_make_eigenvalue_plot.R: make principal component eigenvalue plot as seen in PAGE fig. 4B
 
-* 15_ancestry_pipeline.sh: personal version of https://github.com/armartin/ancestry_pipeline
+* 15_ancestry_pipeline.sh: personal version of https://github.com/armartin/ancestry_pipeline; phase PLINK files with HAPI-UR to be used in RFMix
 
 * 16_make_qq.R: makes qq and aggregate gene lists from GEMMA/PrediXcan output
 
 * *17_make_classes_from_HAPI-UR: makes .classes file for RFMix from HAPI-UR (use in ancestry pipeline)
 
-* 18_convert_MOSAIC_output.R: converts local ancestry output from MOSAIC to a more human-readable format. Output to be used in 19_loc_anc.py.
+* *18_convert_MOSAIC_output.R: converts local ancestry output from MOSAIC to a more human-readable format. Output to be used in 19_loc_anc.py.
 
-* 19_loc_anc.py: "imputes" local ancestry between markers to use local ancestry as a dosage in GEMMA.
+* *19_MOSAIC_loc_anc.py: "imputes" local ancestry between markers to use local ancestry as a dosage in GEMMA.
 
 * *20_GEMMA_wrapper_local_anc_cov.py: wrapper for SNP-by-SNP level GEMMA
 
@@ -48,6 +48,8 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 * *23_split_haplotype_file.py: MOSAIC input with all haplotypes is too large, so this program chunks the ~24k haplotypes into 12 equal chunks for an easier time on the memory
 
 * 24_BIMBAM_to_PX_dosages.py: converts from BIMBAM format (comma delimited) to PrediXcan dosage format
+
+* 25_RFMix_loc_anc.py: translates HAPI-UR and RFMix output into GEMMA-style input dosages to be used in 22_GEMMA_wrapper_admixture_mapping.py
 
 *depreciated and not used for final analysis
 
