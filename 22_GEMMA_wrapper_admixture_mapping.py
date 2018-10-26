@@ -102,7 +102,8 @@ So I swear I tried to do it a fancier way but it's so slow with so many people
 for ind in inds:
     #iterate through cols
     ind_df = loc_anc_cov[[ind]]
-    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = pd.Series(ind_df[ind].values).str.split('\t', 2).str #split each individual's column into 3
+    to_split = pd.Series(ind_df[0]) #force to series since .str.split only works on series
+    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = to_split.str.split('\t', 2).str #split each individual's column into 3
     ind_df = ind_df.drop(ind, axis = 1).transpose().applymap(str)
     #pull from one ancestry each
         #assemble a BIMBAM file except it's local ancestries
