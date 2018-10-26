@@ -98,11 +98,11 @@ for ind in ind_list:
     num_ind = num_ind + 1
     if num_ind in set(progress_landmarks_ind): #print progress by 5% increments
       progress = progress_landmarks_ind.index(num_ind)
-      print("SNP ancestry covariate conversion is " + str(progress * 5) + "% complete.")
+      print("SNP ancestry dosage conversion is " + str(progress * 5) + "% complete.")
 anc_dosage_write.close() #yay we're done!
 
 #make list of inds to use in future analyses and we're gonna use bash cause I feel fancy
 os.system("cut -d, -f1 " + output_prefix + ".csv > " + output_prefix + "_ind.txt")
 os.system("sed '1d' " + output_prefix + "_ind.txt > tmpfile.txt; mv tmpfile.txt " + output_prefix + "_ind.txt")
-print("Completed writing individual and SNP ancestry file to " + output_prefix + "_ind.txt, and " + output_prefix + ".csv. Have a nice day!")
+print("Completed writing individual and SNP ancestry dosage file to " + output_prefix + "_ind.txt, and " + output_prefix + ".csv. Have a nice day!")
    
