@@ -8,7 +8,7 @@ import os
 
 #input arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("--admixed_hap", type = str, action = "store", dest = "admixed_hap", required = True, help = "Path to file of haplotype names including only admixed and no reference.")
+parser.add_argument("--admixed_hap", type = str, action = "store", dest = "admixed_hap", required = True, help = "Path to file of haplotype names including only admixed and no reference")
 parser.add_argument("--phsnp", type = str, action = "store", dest = "phsnp", required = True, help = "Path to .phsnp output by HAPI-UR")
 parser.add_argument("--Viterbi", type = str, action = "store", dest = "Viterbi", required = True, help = "Path to .Viterbi. output by RFMix")
 parser.add_argument("--output_prefix", type = str, action = "store", dest = "output_prefix", required = False, default = "RFMix_for_GEMMA", help = "Prefix for GEMMA-input ancestry file")
@@ -40,7 +40,7 @@ output_prefix = "RFMix_for_GEMMA_test"
 
 #Convert input to suitable format for the loop
 Viterbi.index = haps
-Viterbi.columns = snps
+Viterbi.columns = phsnp['rs'].tolist()
 ind_list = []
 for hap in haps:
     ind_list.append(hap[:-2])
