@@ -50,16 +50,17 @@ else:
     covariates_file = " -c " + args.covariates + " "
 pheno_file = args.pheno
 relatedness = args.relatedness
+output = args.output
 
 '''
-BIMBAM_file = "BIMBAM/chr1.txt.gz"
-covariates_file = "covariates_chr1.txt"
-anno = " -a anno/anno1.txt "
-pheno_file = "pheno_chr1.txt"
-relatedness = "relatedness_chr1.txt"
+BIMBAM_file = "BIMBAM/test.txt.gz"
+covariates_file = "covariates.txt"
+anno = " -a anno/test.txt "
+pheno_file = "pheno.txt"
+relatedness = "relatedness.txt"
 
-SNPs = np.loadtxt("MOSAIC_for_GEMMA_1_snps.txt", dtype = 'string')#, engine='python')
-loc_anc_cov = pd.read_csv("MOSAIC_for_GEMMA_1.csv", delimiter=',', encoding="utf-8-sig")
+SNPs = np.loadtxt("test_SNPs.txt", dtype = 'string')#, engine='python')
+loc_anc_cov = pd.read_csv("test.csv", delimiter=',', encoding="utf-8-sig")
 BIMBAM = pd.read_table(BIMBAM_file, compression='gzip', sep='\t', header = None, index_col = 0)
 
 pheno_num = 1
@@ -82,9 +83,9 @@ pheno_name = ["CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank"]
 
 print("Creating ancestry-specific dosage files.")
 
-IBS_file = open("BIMBAM/IBS.txt", "a+")
-NAT_file = open("BIMBAM/NAT.txt", "a+")
-YRI_file = open("BIMBAM/YRI.txt", "a+")
+IBS_file = open("BIMBAM/IBS" + output + ".txt", "a+")
+NAT_file = open("BIMBAM/NAT" + output + ".txt", "a+")
+YRI_file = open("BIMBAM/YRI" + output + ".txt", "a+")
     
 progress_landmarks_ind = np.linspace(0, len(inds), 21, dtype = int).tolist()
 num_ind = 0
@@ -102,11 +103,7 @@ So I swear I tried to do it a fancier way but it's so slow with so many people
 for ind in inds:
     #iterate through cols
     ind_df = loc_anc_cov[[ind]] 
-    print(ind_df)
-    #ind_df.set_index('IID')
-    #ind_df.columns = ['dosages']
-    
-    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_df.iloc[:,0].str.split('\t', 2).str #split each individual's column into 3
+    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_df[ind].str.split('\t', 2).str #split each individual's column into 3
     ind_df = ind_df.drop(ind, axis = 1).transpose().applymap(str)
     #pull from one ancestry each
         #assemble a BIMBAM file except it's local ancestries
@@ -129,24 +126,24 @@ NAT_file.close()
 YRI_file.close()
     
 #make into BIMBAM
-IBS_BIMBAM = pd.read_table("BIMBAM/IBS.txt", sep='\t', header = None).transpose()
-NAT_BIMBAM = pd.read_table("BIMBAM/NAT.txt", sep='\t', header = None).transpose()
-YRI_BIMBAM = pd.read_table("BIMBAM/YRI.txt", sep='\t', header = None).transpose()
+IBS_BIMBAM = pd.read_table("BIMBAM/IBS" + output + ".txt", sep='\t', header = None).transpose()
+NAT_BIMBAM = pd.read_table("BIMBAM/NAT" + output + ".txt", sep='\t', header = None).transpose()
+YRI_BIMBAM = pd.read_table("BIMBAM/YRI" + output + ".txt", sep='\t', header = None).transpose()
 
 #add SNP info
 IBS_BIMBAM = pd.concat([SNPs, IBS_BIMBAM], axis=1)
 NAT_BIMBAM = pd.concat([SNPs, NAT_BIMBAM], axis=1)
 YRI_BIMBAM = pd.concat([SNPs, YRI_BIMBAM], axis=1)
     
-#write to file 
-IBS_BIMBAM.to_csv("BIMBAM/IBS.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
-NAT_BIMBAM.to_csv("BIMBAM/NAT.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
-YRI_BIMBAM.to_csv("BIMBAM/YRI.txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
+#write to file
+IBS_BIMBAM.to_csv("BIMBAM/IBS" + output + ".txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
+NAT_BIMBAM.to_csv("BIMBAM/NAT" + output + ".txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
+YRI_BIMBAM.to_csv("BIMBAM/YRI" + output + ".txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
     
 #delete intermediate files
-os.system("rm -f BIMBAM/IBS.txt")
-os.system("rm -f BIMBAM/NAT.txt")
-os.system("rm -f BIMBAM/YRI.txt")
+os.system("rm -f BIMBAM/IBS" + output + ".txt")
+os.system("rm -f BIMBAM/NAT" + output + ".txt")
+os.system("rm -f BIMBAM/YRI" + output + ".txt")
     
 #phenotype loop    
 for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
@@ -159,4 +156,9 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
             GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + args.output + "_" + pheno_name_rank + "_" + pop
             os.system(GEMMA_command + " >> GEMMA_log.txt")
     print("Ending analyses on " + pheno_name_rank + ".")
+
+print("Removing extra files.")
+os.system("rm -f BIMBAM/IBS" + output + ".txt.gz")
+os.system("rm -f BIMBAM/NAT" + output + ".txt.gz")
+os.system("rm -f BIMBAM/YRI" + output + ".txt.gz")
 print("Analyses in all phenotypes is complete. Have a nice day :)!")
