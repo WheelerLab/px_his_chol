@@ -18,7 +18,7 @@ parser.add_argument("--BIMBAM", type = str, action = "store", dest = "BIMBAM", r
 parser.add_argument("--pheno", type = str, action = "store", dest = "pheno", required = True, help = "Path to file containing phenotypic information w/o IIDs for only individuals in analysis.")
 parser.add_argument("--covariates", type = str, action = "store", dest = "covariates", required = False, help = "Path to file containing covariates w/o IIDs for only individuals in analysis.")
 parser.add_argument("--anno", type = str, action = "store", dest = "anno", required = False, help = "Path to file containing the annotations.")
-parser.add_argument("--output", type = str, action = "store", dest = "output", required = False, help = "Name of output file")
+parser.add_argument("--output", type = str, action = "store", dest = "output", required = False, default = "", help = "Name of output file")
 args = parser.parse_args()
 
 print("Reading input files.")
@@ -149,12 +149,8 @@ os.system("rm -f BIMBAM/YRI" + output + ".txt")
 for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     print("Starting analyses on " + pheno_name_rank + ".")
     for pop in ['NAT', 'IBS', 'YRI']:
-        if args.output is not None: #notsnp is b/c some dosages are v sparse
-            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + pheno_name_rank + "_" + pop
-            os.system(GEMMA_command + " >> GEMMA_log.txt")
-        else:
-            GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + args.output + "_" + pheno_name_rank + "_" + pop
-            os.system(GEMMA_command + " >> GEMMA_log.txt")
+        GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + output + "_" + pheno_name_rank + "_" + pop
+        os.system(GEMMA_command + " >> GEMMA_log.txt")
     print("Ending analyses on " + pheno_name_rank + ".")
 
 print("Removing extra files.")
