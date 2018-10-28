@@ -147,11 +147,6 @@ IBS_BIMBAM.to_csv("BIMBAM/IBS" + output + ".txt.gz", sep = "\t", na_rep = "NA", 
 NAT_BIMBAM.to_csv("BIMBAM/NAT" + output + ".txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
 YRI_BIMBAM.to_csv("BIMBAM/YRI" + output + ".txt.gz", sep = "\t", na_rep = "NA", header = False, index = False, quoting = 3, float_format='%12f', compression = "gzip")
     
-#delete intermediate files
-os.system("rm -f BIMBAM/IBS" + output + ".txt")
-os.system("rm -f BIMBAM/NAT" + output + ".txt")
-os.system("rm -f BIMBAM/YRI" + output + ".txt")
-    
 #phenotype loop    
 for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     print("Starting analyses on " + pheno_name_rank + ".")
@@ -161,6 +156,9 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     print("Ending analyses on " + pheno_name_rank + ".")
 
 print("Removing extra files.")
+os.system("rm -f BIMBAM/IBS" + output + ".txt")
+os.system("rm -f BIMBAM/NAT" + output + ".txt")
+os.system("rm -f BIMBAM/YRI" + output + ".txt")
 os.system("rm -f BIMBAM/IBS" + output + ".txt.gz")
 os.system("rm -f BIMBAM/NAT" + output + ".txt.gz")
 os.system("rm -f BIMBAM/YRI" + output + ".txt.gz")
