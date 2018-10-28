@@ -24,19 +24,22 @@ args = parser.parse_args()
 print("Reading input files.")
 loc_anc_cov = pd.read_csv(args.snptable, delimiter=',', encoding="utf-8-sig")
 if args.BIMBAM.endswith(".gz"):
-    BIMBAM_chunks = []
-    for chunk in pd.read_table(args.BIMBAM, compression='gzip', sep='\t', header = None, index_col = 0, chunksize = 20000):
-        BIMBAM_chunks.append(chunk) #when your data too thicc
-    BIMBAM = pd.concat(BIMBAM_chunks, axis = 0)
-    del BIMBAM_chunks
-    del chunk
+    #BIMBAM_chunks = []
+    #for chunk in pd.read_table(args.BIMBAM, compression='gzip', sep='\t', header = None, index_col = 0, chunksize = 20000):
+    #    BIMBAM_chunks.append(chunk) #when your data too thicc
+    #BIMBAM = pd.concat(BIMBAM_chunks, axis = 0)
+    #del BIMBAM_chunks
+    #del chunk
+    os.system("zcat " + args.BIMBAM + " | awk '{ print $1, $2, $3 }' > SNPs_" + args.output + ".txt") #there's not really a point to loading the entire BIMBAM if I'm just using the first three cols
 else:
-    BIMBAM_chunks = []
-    for chunk in pd.read_table(args.BIMBAM, sep='\t', header = None, index_col = 0, chunksize = 20000):
-        BIMBAM_chunks.append(chunk) #when your data too thicc
-    BIMBAM = pd.concat(BIMBAM_chunks, axis = 0)
-    del BIMBAM_chunks
-    del chunk
+    #BIMBAM_chunks = []
+    #for chunk in pd.read_table(args.BIMBAM, sep='\t', header = None, index_col = 0, chunksize = 20000):
+    #    BIMBAM_chunks.append(chunk) #when your data too thicc
+    #BIMBAM = pd.concat(BIMBAM_chunks, axis = 0)
+    #del BIMBAM_chunks
+    #del chunk
+    os.system("awk '{ print $1, $2, $3 }' " + args.BIMBAM + " > SNPs_" + args.output + ".txt")
+SNPs = pd.read_csv("SNPs_" + args.output + ".txt", delimiter=' ', encoding="utf-8-sig", header = None)
 
 #following are just to be used in GEMMA input
 covariates_file = args.covariates
@@ -72,14 +75,23 @@ del chunk
 pheno_num = 1
 pheno_name_rank = "CHOL_rank"
 ind = inds[0]
+
+loc_anc_cov = pd.read_csv("test.csv", delimiter=',', encoding="utf-8-sig")
+SNPs = pd.read_csv("SNPs_test.txt", delimiter=' ', encoding="utf-8-sig", header = None)
+covariates_file = "covariates_22.txt"
+anno = " -a " + "anno/test.txt" + " "
+covariates_file = " -c " + "covariates_22.txt" + " "
+pheno_file = "pheno_22.txt"
+relatedness = "relatedness_22.txt"
+output = "test"
 '''
 
 print("Formatting input for processing.")
 loc_anc_cov['IID'] = loc_anc_cov['IID'].str.replace(r'.*:', '')
 inds = loc_anc_cov['IID'].tolist()
 loc_anc_cov = loc_anc_cov.set_index('IID').transpose()
-SNPs = BIMBAM[[1, 2]]
-SNPs = SNPs.reset_index()
+#SNPs = BIMBAM[[1, 2]]
+#SNPs = SNPs.reset_index()
 SNPs.columns = ['rs', 'A1', 'A0']
 SNP_list = SNPs['rs'].tolist()
 
@@ -110,7 +122,8 @@ for ind in inds:
     #iterate through cols
     ind = str(ind)
     ind_df = loc_anc_cov[[ind]] 
-    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_df[ind].str.split('\t', 2).str #split each individual's column into 3
+    ind_series = ind_df[ind]
+    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_series.str.split('\t', 2).str #split each individual's column into 3
     ind_df = ind_df.drop(ind, axis = 1).transpose().applymap(str)
     #pull from one ancestry each
         #assemble a BIMBAM file except it's local ancestries
@@ -152,15 +165,16 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     print("Starting analyses on " + pheno_name_rank + ".")
     for pop in ['NAT', 'IBS', 'YRI']:
         GEMMA_command = "gemma -g BIMBAM/" + pop + output + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + output + "_" + pheno_name_rank + "_" + pop
-        os.system(GEMMA_command + " >> GEMMA_" + output + ".txt")
-        print("Completed with " + pop + " for " + pheno_name_rank + ".")
+        os.system(GEMMA_command + " >> GEMMA_log.txt")
     print("Ending analyses on " + pheno_name_rank + ".")
 
 print("Removing extra files.")
-os.system("rm -f BIMBAM/IBS" + output + ".txt")
-os.system("rm -f BIMBAM/NAT" + output + ".txt")
-os.system("rm -f BIMBAM/YRI" + output + ".txt")
+os.system("rm -f SNPs_" + args.output + ".txt")
 os.system("rm -f BIMBAM/IBS" + output + ".txt.gz")
 os.system("rm -f BIMBAM/NAT" + output + ".txt.gz")
 os.system("rm -f BIMBAM/YRI" + output + ".txt.gz")
+os.system("rm -f BIMBAM/IBS" + output + ".txt")
+os.system("rm -f BIMBAM/NAT" + output + ".txt")
+os.system("rm -f BIMBAM/YRI" + output + ".txt")
+    
 print("Analyses in all phenotypes is complete. Have a nice day :)!")
