@@ -27,14 +27,14 @@ if args.BIMBAM.endswith(".gz"):
     BIMBAM_chunks = []
     for chunk in pd.read_table(args.BIMBAM, compression='gzip', sep='\t', header = None, index_col = 0, chunksize = 20000):
         BIMBAM_chunks.append(chunk) #when your data too thicc
-    BIMBAM = pd.concat(BIMBAM_chunks, axis = 0).transpose()
+    BIMBAM = pd.concat(BIMBAM_chunks, axis = 0)
     del BIMBAM_chunks
     del chunk
 else:
     BIMBAM_chunks = []
-    for chunk in pd.read_table(args.BIMBAM, compression='gzip', sep='\t', header = None, index_col = 0, chunksize = 20000):
+    for chunk in pd.read_table(args.BIMBAM, sep='\t', header = None, index_col = 0, chunksize = 20000):
         BIMBAM_chunks.append(chunk) #when your data too thicc
-    BIMBAM = pd.concat(BIMBAM_chunks, axis = 0).transpose()
+    BIMBAM = pd.concat(BIMBAM_chunks, axis = 0)
     del BIMBAM_chunks
     del chunk
 
@@ -58,10 +58,16 @@ covariates_file = "covariates.txt"
 anno = " -a anno/test.txt "
 pheno_file = "pheno.txt"
 relatedness = "relatedness.txt"
+output = "test"
 
 SNPs = np.loadtxt("test_SNPs.txt", dtype = 'string')#, engine='python')
 loc_anc_cov = pd.read_csv("test.csv", delimiter=',', encoding="utf-8-sig")
-BIMBAM = pd.read_table(BIMBAM_file, compression='gzip', sep='\t', header = None, index_col = 0)
+BIMBAM_chunks = []
+for chunk in pd.read_table(BIMBAM_file, compression='gzip', sep='\t', header = None, index_col = 0, chunksize = 20000):
+    BIMBAM_chunks.append(chunk) #when your data too thicc
+BIMBAM = pd.concat(BIMBAM_chunks, axis = 0)
+del BIMBAM_chunks
+del chunk
 
 pheno_num = 1
 pheno_name_rank = "CHOL_rank"
@@ -102,6 +108,7 @@ So I swear I tried to do it a fancier way but it's so slow with so many people
     
 for ind in inds:
     #iterate through cols
+    ind = str(ind)
     ind_df = loc_anc_cov[[ind]] 
     ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_df[ind].str.split('\t', 2).str #split each individual's column into 3
     ind_df = ind_df.drop(ind, axis = 1).transpose().applymap(str)
