@@ -156,7 +156,7 @@ os.system("rm -f BIMBAM/YRI" + output + ".txt")
 for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     print("Starting analyses on " + pheno_name_rank + ".")
     for pop in ['NAT', 'IBS', 'YRI']:
-        GEMMA_command = "gemma -g BIMBAM/" + pop + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + output + "_" + pheno_name_rank + "_" + pop
+        GEMMA_command = "gemma -g BIMBAM/" + pop + output + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + output + "_" + pheno_name_rank + "_" + pop
         os.system(GEMMA_command + " >> GEMMA_log.txt")
     print("Ending analyses on " + pheno_name_rank + ".")
 
