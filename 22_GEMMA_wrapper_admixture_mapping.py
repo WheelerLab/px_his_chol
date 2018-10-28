@@ -153,6 +153,7 @@ for pheno_num, pheno_name_rank in zip(pheno, pheno_name):
     for pop in ['NAT', 'IBS', 'YRI']:
         GEMMA_command = "gemma -g BIMBAM/" + pop + output + ".txt.gz -p " + pheno_file + " -n " + str(pheno_num) + anno + " -k " + relatedness + covariates_file + " -lmm 4 -notsnp -o " + output + "_" + pheno_name_rank + "_" + pop
         os.system(GEMMA_command + " >> GEMMA_log.txt")
+        print("Completed with " + pop + " for " + pheno_name_rank + ".")
     print("Ending analyses on " + pheno_name_rank + ".")
 
 print("Removing extra files.")
