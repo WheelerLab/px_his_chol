@@ -29,13 +29,13 @@ output_prefix = args.output_prefix
 #test data
 Viterbi_chunks = []
 for chunk in pd.read_table("test.Viterbi.txt", header = None, delim_whitespace = True, chunksize = 20000):
-    Viterbi_chunks.append(chunk) 
+    Viterbi_chunks.append(chunk) #when your data too thicc
 Viterbi = pd.concat(Viterbi_chunks, axis = 0).transpose()
 del Viterbi_chunks
 del chunk
-phind = pd.read_table("HCHS_chr22.phind", header = None, delim_whitespace = True)
+haps = np.loadtxt("haps.txt", dtype = 'string')
 phsnp = pd.read_table("test.phsnp", header = None, delim_whitespace = True)
-output_prefix = "RFMix_for_GEMMA_test"
+output_prefix = "test"
 '''
 
 #Convert input to suitable format for the loop
@@ -47,6 +47,9 @@ ind_list = []
 for hap in haps:
     ind_list.append(hap[:-2])
 ind_list = sorted(set(ind_list), key = ind_list.index) #remove duplicates but preserve order
+ind_file = open(output_prefix + "_ind.txt", "w") #to be used in subsetting GEMMA input
+ind_file.write("\n".join(ind_list))
+ind_file.close()
 
 print("Starting to make dosage file.")
 anc_dosage_write = open(output_prefix + ".csv", "a+")
@@ -103,9 +106,5 @@ for ind in ind_list:
       progress = progress_landmarks_ind.index(num_ind)
       print("SNP ancestry dosage conversion is " + str(progress * 5) + "% complete.")
 anc_dosage_write.close() #yay we're done!
-
-#make list of inds to use in future analyses (aka GEMMA input subsetting) and we're gonna use bash cause I feel fancy
-os.system("cut -d, -f1 " + output_prefix + ".csv > " + output_prefix + "_ind.txt")
-os.system("sed '1d' " + output_prefix + "_ind.txt > tmpfile.txt; mv tmpfile.txt " + output_prefix + "_ind.txt")
 print("Completed writing individual, SNP, and SNP ancestry dosage file to " + output_prefix + "_ind.txt, " + output_prefix + "_SNPs.txt and " + output_prefix + ".csv. Have a nice day!")
    
