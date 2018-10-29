@@ -42,7 +42,6 @@ else:
 SNPs = pd.read_csv("SNPs_" + args.output + ".txt", delimiter=' ', encoding="utf-8-sig", header = None)
 
 #following are just to be used in GEMMA input
-covariates_file = args.covariates
 if args.anno is None:
     anno = " "
 else:
@@ -56,31 +55,11 @@ relatedness = args.relatedness
 output = args.output
 
 '''
-BIMBAM_file = "BIMBAM/test.txt.gz"
-covariates_file = "covariates.txt"
-anno = " -a anno/test.txt "
-pheno_file = "pheno.txt"
-relatedness = "relatedness.txt"
-output = "test"
-
-SNPs = np.loadtxt("test_SNPs.txt", dtype = 'string')#, engine='python')
 loc_anc_cov = pd.read_csv("test.csv", delimiter=',', encoding="utf-8-sig")
-BIMBAM_chunks = []
-for chunk in pd.read_table(BIMBAM_file, compression='gzip', sep='\t', header = None, index_col = 0, chunksize = 20000):
-    BIMBAM_chunks.append(chunk) #when your data too thicc
-BIMBAM = pd.concat(BIMBAM_chunks, axis = 0)
-del BIMBAM_chunks
-del chunk
-
-pheno_num = 1
-pheno_name_rank = "CHOL_rank"
-ind = inds[0]
-
-loc_anc_cov = pd.read_csv("test.csv", delimiter=',', encoding="utf-8-sig")
+#os.system("zcat " + args.BIMBAM + " | awk '{ print $1, $2, $3 }' > SNPs_" + args.output + ".txt") #there's not really a point to loading the entire BIMBAM if I'm just using the first three cols
 SNPs = pd.read_csv("SNPs_test.txt", delimiter=' ', encoding="utf-8-sig", header = None)
-covariates_file = "covariates_22.txt"
-anno = " -a " + "anno/test.txt" + " "
-covariates_file = " -c " + "covariates_22.txt" + " "
+anno = " -a anno/anno22.txt "
+covariates_file = " -c covariates_22.txt "
 pheno_file = "pheno_22.txt"
 relatedness = "relatedness_22.txt"
 output = "test"
@@ -122,8 +101,9 @@ for ind in inds:
     #iterate through cols
     ind = str(ind)
     ind_df = loc_anc_cov[[ind]] 
-    ind_series = ind_df[ind]
-    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_series.str.split('\t', 2).str #split each individual's column into 3
+    ind_df = ind_df[[0]] #sometimes it's two columns for some ungodly reason so just take the first one (oh I made the _ind file wrong whelp)
+    print(ind_df)
+    ind_df['NAT'], ind_df['IBS'], ind_df['YRI'] = ind_df[ind].str.split('\t', 2).str #split each individual's column into 3
     ind_df = ind_df.drop(ind, axis = 1).transpose().applymap(str)
     #pull from one ancestry each
         #assemble a BIMBAM file except it's local ancestries
