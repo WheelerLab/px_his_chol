@@ -17,12 +17,12 @@ if(is.null(args$output_suffix)){
   output_suffix <- args$output_suffix
 }
 
-load("/home/angela/px_his_chol/LMM-OPS/run_LMM-OPS_chr22.RData")
-ind <- fread("/home/angela/px_his_chol/local_anc_GEMMA/MOSAIC_RESULTS/MOSAIC_for_GEMMA_1_ind.txt", header = F, sep = ":")
+load("/home/angela/px_his_chol/LMM-OPS/run_LMM-OPS_chr22.RData") #KINGmat is stored in here
+ind <- fread(ind_file_name, header = F, sep = ":")
 
 #make subsetted relatedness matrix
-KINGmat_v2 <- KINGmat[ind$V2,,drop=FALSE]
-KINGmat_v2 <- KINGmat_v2[,ind$V2,drop=FALSE]
+KINGmat_v2 <- KINGmat[ind$V2,, drop = FALSE]
+KINGmat_v2 <- KINGmat_v2[,ind$V2, drop = FALSE]
 relatedness_file_name <- paste("relatedness_", output_suffix, ".txt", sep = "")
 fwrite(as.data.frame(KINGmat_v2), relatedness_file_name, sep = "\t", row.names = F, col.names = F, quote = F, na = "NA")
 
