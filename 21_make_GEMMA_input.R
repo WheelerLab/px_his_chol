@@ -6,7 +6,7 @@ library(data.table)
 library(dplyr)
 
 parser <- ArgumentParser()
-parser$add_argument("--ind_file_name", help="Individual file produced by 19_loc_anc.py", required = T)
+parser$add_argument("--ind_file_name", help = "Individual file produced by 25_RFMix_loc_anc.py", required = T)
 parser$add_argument("--output_suffix", help = "Suffix for output.")
 args <- parser$parse_args()
 
