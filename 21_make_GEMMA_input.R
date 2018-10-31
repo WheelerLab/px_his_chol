@@ -42,6 +42,7 @@ pcs <- pcs %>% select(V2, V7, V8, V9, V10, V11)
 covariates <- left_join(pcs, region, by = "V2")
 covariates <- left_join(ind, covariates, by = "V2")
 covariates$V1.x <- NULL
+covariates$V1.y <- NULL
 covariates$V2 <- NULL
 covariates_file_name <- paste("covariates_", output_suffix, ".txt", sep = "")
 fwrite(covariates, covariates_file_name, sep = "\t", row.names = F, col.names = F, quote = F, na = "NA")
