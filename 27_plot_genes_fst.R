@@ -25,15 +25,15 @@ Fst_num_genes_n_samples <- read_csv("/home/angela/px_his_chol/MESA_compare/GTEx_
 Fst_num_genes_n_samples <- Fst_num_genes_n_samples[complete.cases(Fst_num_genes_n_samples),]
 fig <- ggplot(Fst_num_genes_n_samples, aes(x = Sample_size, y = Sig_gene_associations, label = Tiss_abb)) + 
   #geom_raster() + 
-  geom_point(aes(fill = log10(Mean_fst)), shape = 21, size = 10) + #, size = Model_Sample_Size), shape = 21) + 
+  geom_point(aes()) + #, size = Model_Sample_Size), shape = 21) + 
   #coord_cartesian() + 
-  #geom_label_repel(aes(label = Tiss_abb), box.padding = 0.35, point.padding = 0.15, segment.color = NA, hjust = 0.5, direction = "x") +
+  geom_label_repel(aes(label = Tiss_abb), force = 3, box.padding = 0.35, point.padding = 0.15, segment.color = "grey75") +
   xlab("Model sample size") + 
   ylab("Significant gene associations") +
-  labs(fill = expression(paste("log10(", F[ST], ")"))) + 
+  #labs(fill = expression(paste("log10(", F[ST], ")"))) + 
   theme_bw(12) +
   scale_fill_continuous(type = "viridis") + 
-  scale_x_continuous(limits = c(50, 400)) + 
-  scale_y_continuous(limits = c(1, 14)) + 
+  scale_x_continuous(limits = c(0, 400)) + 
+  scale_y_continuous(limits = c(0, 14)) + 
   theme(text = element_text(size = 15))
 print(fig)
