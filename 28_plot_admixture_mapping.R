@@ -1,3 +1,4 @@
+#makes Manhattan plot with ancestry mixture overlays by ancestry
 library(data.table)
 library(ggplot2)
 HDL_16 <- fread("/home/angela/px_his_chol/GEMMA/output/HDL_rank_sig_snps_p-0.txt")
