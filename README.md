@@ -54,6 +54,8 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 * 26_local_ancestry_wrapper.py: Goes from the RFMix local ancestry estimates (25), PrediXcan-style dosages (2), and HAPI-UR phasings (15) to full admixture mapping in GEMMA (21, 22)
 
 * 27_plot_genes_fst.R: plots various models' sample size, significant gene associations, and Fst against each other
+
+* 28_plot_admixture_mapping.R: makes Manhattan plot with ancestry mixture overlays by ancestry
  
 Strikethrough: depreciated and not used for final analysis
 
