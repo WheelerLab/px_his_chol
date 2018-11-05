@@ -56,6 +56,8 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 * 27_plot_genes_fst.R: plots various models' sample size, significant gene associations, and Fst against each other
 
 * 28_plot_admixture_mapping.R: makes Manhattan plot with ancestry mixture overlays by ancestry
+
+* 29_backward_elimination_sig_genes.R: backward elimination of significant genes to determine which ones are independent
  
 Strikethrough: depreciated and not used for final analysis
 
