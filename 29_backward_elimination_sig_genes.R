@@ -18,8 +18,10 @@ for(pheno_name in phenos){
   sig_tiss_gene <- paste(test_pheno$tissue, test_pheno$gene, sep = "_")
   pheno_name_rank <- paste(pheno_name, "_rank", sep = "")
   back_elim <- pheno %>% select(IID, pheno_name_rank)
+  print("Running analyses on " %&% pheno_name_rank %&% ".")
   
   for(tiss_name in tissues){
+    print("Running analyses on " %&% tiss_name_rank %&% ".")
     tiss <- fread('/home/angela/px_his_chol/PrediXcan/' %&% tiss_name %&% '_predicted_expression.txt', header = F, nThread = 30) #load in predicted expression file
     tiss$V1 <- NULL #remove FID
     tiss_header <- paste(tiss_name, "_", gsub("\\..*", "", c(tiss[1,])), sep = "") #remove all after . and add tiss name
@@ -38,8 +40,10 @@ for(pheno_name in phenos){
   fmla <- as.formula(paste(pheno_name_rank,  " ~ ", paste(predictor_genes, collapse= "+")))
   all_tiss_gene <- lm(fmla, data = back_elim) 
   saveRDS(all_tiss_gene, file = pheno_name %&% "_all_tiss_gene.rds")
+  print("Finished making full model for " %&% pheno_name_rank %&% ".")
   back_elim_complete <- step(all_tiss_gene, direction = "backward", trace = FALSE) #perform backward analysis on full model
   saveRDS(back_elim_complete, file = pheno_name %&% "_back_elim.rds")
+  print("Finished making backward-eliminated model for " %&% pheno_name_rank %&% ".")
 }
 
 
