@@ -34,6 +34,7 @@ for(pheno_name in phenos){
     back_elim <- left_join(back_elim, for_back_elim, by = "IID") #add to list to back-elim
   }
   
+  print("Started making models for " %&% pheno_name_rank %&% ".")
   back_elim$IID <- NULL #the IID column has served its purpose
   back_elim <- back_elim[complete.cases(back_elim),]
   predictor_genes <- colnames(back_elim)[2:length(colnames(back_elim))] #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
