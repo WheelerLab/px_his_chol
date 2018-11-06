@@ -10,8 +10,8 @@ tissues <- fread("/home/angela/px_yri_chol/PrediXcan/database_tissues.txt", head
 tissues <- tissues$V1 #get list of tissues
 back_elim <- pheno[,2] #extract only FID and IID
 
-pheno_name <- "CHOL"
-tiss_name <- "TW_Artery_Coronary_0.5.db"
+#pheno_name <- "CHOL"
+#tiss_name <- "TW_Artery_Coronary_0.5.db"
 
 for(pheno_name in phenos){
   test_pheno <- subset(sig_gene_HCHS, pheno == pheno_name) #subset to just the pheno in question
