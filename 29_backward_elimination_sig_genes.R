@@ -1,4 +1,5 @@
 #backward elimination of significant genes to determine which ones are independent
+library(data.table)
 library(dplyr)
 "%&%" = function(a,b) paste(a,b,sep="")
 sig_gene_HCHS <- fread("/home/angela/px_his_chol/MESA_compare/GTEx_WB/sig_gene_HCHS.csv")
