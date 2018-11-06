@@ -21,7 +21,7 @@ for(pheno_name in phenos){
   print("Running analyses on " %&% pheno_name_rank %&% ".")
   
   for(tiss_name in tissues){
-    print("Running analyses on " %&% tiss_name_rank %&% ".")
+    print("Running analyses on " %&% tiss_name %&% ".")
     tiss <- fread('/home/angela/px_his_chol/PrediXcan/' %&% tiss_name %&% '_predicted_expression.txt', header = F, nThread = 30) #load in predicted expression file
     tiss$V1 <- NULL #remove FID
     tiss_header <- paste(tiss_name, "_", gsub("\\..*", "", c(tiss[1,])), sep = "") #remove all after . and add tiss name
