@@ -42,13 +42,3 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     }
   }
 }
-
-#might as well run COLOC in the same script
-setwd("/home/angela/px_his_chol/COLOC/")
-for(pop in 1:length(pops)){ #the return of the triple loop
-  for(pheno in phenos){ 
-    for(chr in chrs){ 
-      system("python3 summary-gwas-imputation/src/run_coloc.py -gwas COLOC_input/GWAS_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt.gz -gwas_sample_size 11003 -eqtl COLOC_input/eQTL_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt.gz -eqtl_sample_size " %&% pops_sample_size[pop] %&% " -output results/COLOC_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&%".txt.gz -parsimony 10 > /dev/null")
-    }
-  }
-}
