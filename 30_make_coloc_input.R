@@ -33,10 +33,11 @@ for(pop in length(pops)){ #read in pop's .frq file for MAF
       GEMMA_for_COLOC_chr <- subset(GEMMA_for_COLOC, panel_variant_id %in% snps_in_both)
       meQTL_for_COLOC_chr <- subset(meQTL_for_COLOC, variant_id %in% snps_in_both)
 
-      fwrite(meQTL_for_COLOC_chr, "/home/angela/px_his_chol/COLOC/" %&% pops[pop] %&% "_for_COLOC_chr" %&% chr %&% ".txt", quote = F, sep = "\t", na = "NA", row.names = F, col.names = T)
-      gzip("/home/angela/px_his_chol/COLOC/" %&% pops[pop] %&% "_for_COLOC_chr" %&% chr %&% ".txt", destname = "/home/angela/px_his_chol/COLOC/" %&% pops[pop] %&% "_for_COLOC_chr" %&% chr %&% ".txt.gz") #script may only take .gz values so can't hurt to be too careful
+      fwrite(meQTL_for_COLOC_chr, "/home/angela/px_his_chol/COLOC/" %&% pops[pop] %&% "_for_COLOC_chr" %&% chr %&% "_" %&% pheno %&% ".txt", quote = F, sep = "\t", na = "NA", row.names = F, col.names = T)
+      gzip("/home/angela/px_his_chol/COLOC/" %&% pops[pop] %&% "_for_COLOC_chr" %&% chr %&% "_" %&% pheno %&% ".txt", destname = "/home/angela/px_his_chol/COLOC/" %&% pops[pop] %&% "_for_COLOC_chr" %&% chr %&% "_" %&% pheno %&% ".txt.gz") #script may only take .gz values so can't hurt to be too careful
       fwrite(GEMMA_for_COLOC_chr, "/home/angela/px_his_chol/COLOC/" %&% pheno %&% "_chr" %&% chr %&% "_for_COLOC.txt", row.names = F, col.names = T, sep = "\t", quote = F, na = "NA")
       gzip("/home/angela/px_his_chol/COLOC/" %&% pheno %&% "_chr" %&% chr %&% "_for_COLOC.txt", "/home/angela/px_his_chol/COLOC/" %&% pheno %&% "_chr" %&% chr %&% "_for_COLOC.txt.gz")
+      print("Completed with " %&% pops[pop] %&% ", chr" %&% chr %&% ", for " %&% pheno %&% ".")
     }
   }
 }
