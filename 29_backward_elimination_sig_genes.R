@@ -10,10 +10,8 @@ pheno <- pheno %>% select(FID, IID, CHOL_rank, HDL_rank, TRIG_rank, LDL_rank)
 phenos <- c("CHOL", "HDL", "TRIG", "LDL")
 tissues <- fread("/home/angela/px_yri_chol/PrediXcan/database_tissues.txt", header = F)
 tissues <- tissues$V1 #get list of tissues
+tissues <- c("AFA.db", "AFHI.db", "ALL.db", "CAU.db", "HIS.db", tissues) #add MESA tissues
 back_elim <- pheno[,2] #extract only FID and IID
-
-#pheno_name <- "CHOL"
-#tiss_name <- "TW_Artery_Coronary_0.5.db"
 
 for(pheno_name in phenos){
   test_pheno <- subset(sig_gene_HCHS, pheno == pheno_name) #subset to just the pheno in question
