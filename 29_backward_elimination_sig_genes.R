@@ -1,6 +1,7 @@
 #backward elimination of significant genes to determine which ones are independent
 library(data.table)
 library(dplyr)
+library(MASS)
 "%&%" = function(a,b) paste(a,b,sep="")
 sig_gene_HCHS <- fread("/home/angela/px_his_chol/MESA_compare/GTEx_WB/sig_gene_HCHS.csv")
 pheno <- fread('/home/angela/px_his_chol/editedPheno/11_all_lipid_rank_12236_FID_IID.txt', header = T)
@@ -43,7 +44,7 @@ for(pheno_name in phenos){
   all_tiss_gene <- lm(fmla, data = back_elim) 
   saveRDS(all_tiss_gene, file = pheno_name %&% "_all_tiss_gene.rds")
   print("Finished making full model for " %&% pheno_name_rank %&% ".")
-  back_elim_complete <- step(all_tiss_gene, direction = "backward", trace = FALSE) #perform backward analysis on full model
+  back_elim_complete <- stepAIC(all_tiss_gene, direction = "backward", trace = FALSE) #perform backward analysis on full model
   saveRDS(back_elim_complete, file = pheno_name %&% "_back_elim.rds")
   print("Finished making backward-eliminated model for " %&% pheno_name_rank %&% ".")
 }
