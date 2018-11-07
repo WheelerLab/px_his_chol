@@ -41,7 +41,7 @@ for(pheno_name in phenos){
   back_elim <- back_elim[complete.cases(back_elim),]
   predictor_genes <- colnames(back_elim)[2:length(colnames(back_elim))] #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
   fmla <- as.formula(paste(pheno_name_rank,  " ~ ", paste(predictor_genes, collapse= "+")))
-  fwrite(back_elim, "_all_tiss_gene_before_back_elim.csv", row.names = F, col.names = T, sep = ",", na = NA, quote = F)
+  fwrite(back_elim, pheno_name_rank %&% "_all_tiss_gene_before_back_elim.csv", row.names = F, col.names = T, sep = ",", na = NA, quote = F)
   all_tiss_gene <- lm(fmla, data = back_elim) 
   saveRDS(all_tiss_gene, file = pheno_name %&% "_all_tiss_gene.rds")
   print("Finished making full model for " %&% pheno_name_rank %&% ".")
