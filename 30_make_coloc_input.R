@@ -8,7 +8,7 @@ chrs <- c(1:22)
 pops <- c("AFA", "CAU", "HIS") #do combined pops later
 pops_sample_size <- c(233, 352, 578)
 
-for(pop in length(pops)){ #read in pop's .frq file for MAF
+for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
   frq <- fread("/home/angela/px_his_chol/MESA_compare/" %&% pops[pop] %&% "_rm_missnps.frq")
   frq <- frq %>% select(SNP, MAF)
 
