@@ -1,7 +1,8 @@
 #backward elimination of significant genes to determine which ones are independent
 library(data.table)
-library(dplyr)
 library(MASS)
+library(dplyr)
+
 "%&%" = function(a,b) paste(a,b,sep="")
 sig_gene_HCHS <- fread("/home/angela/px_his_chol/MESA_compare/GTEx_WB/sig_gene_HCHS.csv")
 pheno <- fread('/home/angela/px_his_chol/editedPheno/11_all_lipid_rank_12236_FID_IID.txt', header = T)
