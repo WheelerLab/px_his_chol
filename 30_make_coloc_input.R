@@ -5,11 +5,11 @@ library(R.utils)
 "%&%" = function(a,b) paste(a,b,sep="")
 phenos <- c("CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank")
 chrs <- c(1:22)
-pops <- c("AFA", "CAU", "HIS") #do combined pops later
-pops_sample_size <- c(233, 352, 578)
+pops <- c("AFA", "CAU", "HIS", "AFHI", "ALL") #do combined pops later
+pops_sample_size <- c(233, 352, 578, 585, 1163) #R doesn't have dicts so we're doing it a slgihtly more ratchet way
 
 for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
-  frq <- fread("/home/angela/px_his_chol/MESA_compare/" %&% pops[pop] %&% "_rm_missnps.frq")
+  frq <- fread("/home/angela/px_his_chol/MESA_compare/" %&% pops[pop] %&% ".frq")
   frq <- frq %>% select(SNP, MAF)
 
   for(pheno in phenos){ #read in GEMMA output file
@@ -21,7 +21,7 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     GEMMA_for_COLOC <- GEMMA_for_COLOC[complete.cases(GEMMA_for_COLOC),] #COLOC does not like missing values
     
     for(chr in chrs){ #yes triple loops are ratchet
-      meqtl <- fread("/home/lauren/files_for_revisions_plosgen/meqtl_results/MESA/" %&% pops[pop] %&% "_Nk_10_PFs_chr" %&% chr %&% "pcs_3.meqtl.cis.2018-04-04.txt.gz") #read in matrix eQTL results
+      meqtl <- fread("/home/lauren/files_for_revisions_plosgen/meqtl_results/MESA/" %&% pops[pop] %&% "_Nk_10_PFs_chr" %&% chr %&% "pcs_3.meqtl.cis.*") #read in matrix eQTL results
       meqtl$se <- meqtl$beta / meqtl$statistic #make your own standard error since it's not in the meQTL output
       meqtl$n_samples <- pops_sample_size[pop]
       meQTL_for_COLOC <- left_join(meqtl, frq, by = c("snps" = "SNP")) #add freq to COLOC input
@@ -38,6 +38,16 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
       fwrite(GEMMA_for_COLOC_chr, "/home/angela/px_his_chol/COLOC/COLOC_input/GWAS_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt", row.names = F, col.names = T, sep = "\t", quote = F, na = "NA")
       gzip("/home/angela/px_his_chol/COLOC/COLOC_input/GWAS_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt", "/home/angela/px_his_chol/COLOC/COLOC_input/GWAS_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt.gz")
       print("Completed with " %&% pops[pop] %&% ", chr" %&% chr %&% ", for " %&% pheno %&% ".")
+    }
+  }
+}
+
+#might as well run COLOC in the same script
+setwd("/home/angela/px_his_chol/COLOC/")
+for(pop in 1:length(pops)){ #the return of the triple loop
+  for(pheno in phenos){ 
+    for(chr in chrs){ 
+      system("python3 summary-gwas-imputation/src/run_coloc.py -gwas COLOC_input/GWAS_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt.gz -gwas_sample_size 11003 -eqtl COLOC_input/eQTL_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt.gz -eqtl_sample_size " %&% pops_sample_size[pop] %&% " -output results/COLOC_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&%".txt.gz -parsimony 10 > /dev/null")
     }
   }
 }
