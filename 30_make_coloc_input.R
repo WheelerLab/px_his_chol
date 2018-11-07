@@ -1,3 +1,4 @@
+#converts from GEMMA and matrix eQTL format to input for COLOC script
 library(data.table)
 library(dplyr)
 library(R.utils)
