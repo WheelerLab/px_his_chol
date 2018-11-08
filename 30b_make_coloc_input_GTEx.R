@@ -22,6 +22,23 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
   frq <- left_join(frq, bim, by = "SNP")
   frq <- frq %>% select(SNP, MAF, cpos)
   
+  #DOWNLOADED V6 FROM GTEx WEBSITE
+  meqtl <- fread("/home/angela/px_his_chol/COLOC/GTEx_V6_eqtl/GTEx_Analysis_v6p_all-associations/" %&% pops[pop] %&% "_Analysis.v6p.all_snpgene_pairs.txt.gz", nThread = 30) #read in matrix eQTL results
+  
+  #for testing
+  #meqtl <- meqtl[1:1000000,]
+  
+  #meqtl$se <- meqtl$beta / meqtl$statistic #make your own standard error since it's not in the meQTL output
+  meqtl$n_samples <- pops_sample_size[pop]
+  
+  #why can't you just be in normal cpos format
+  meqtl$cpos <- gsub("^([^_]*_[^_]*)_.*$", "\\1", meqtl$variant_id) #https://stackoverflow.com/questions/7449564/regex-return-all-before-the-second-occurrence
+  
+  meQTL_for_COLOC <- left_join(meqtl, frq, by = "cpos") #add freq to COLOC input
+  meQTL_for_COLOC <- meQTL_for_COLOC %>% select(gene_id, SNP, MAF, pval_nominal, slope, slope_se) #subset to COLOC input
+  colnames(meQTL_for_COLOC) <- c("gene_id", "variant_id", "maf", "pval_nominal", "slope", "slope_se")
+  meQTL_for_COLOC <- meQTL_for_COLOC[complete.cases(meQTL_for_COLOC),]
+  
   for(pheno in phenos){ #read in GEMMA output file
     GEMMA_result <- fread("/home/angela/px_his_chol/GEMMA/output/" %&% pheno %&% "_sig_snps_p-0.txt", header = T)
     GEMMA_result$chr <- gsub("chr", "", GEMMA_result$chr)
@@ -30,23 +47,6 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     GEMMA_for_COLOC$sample_size <- 11103
     colnames(GEMMA_for_COLOC) <- c("panel_variant_id", "effect_size", "standard_error", "frequency", "sample_size", "variant_id")
     GEMMA_for_COLOC <- GEMMA_for_COLOC[complete.cases(GEMMA_for_COLOC),] #COLOC does not like missing values
-    
-    #DOWNLOADED V6 FROM GTEx WEBSITE
-    meqtl <- fread("/home/angela/px_his_chol/COLOC/GTEx_V6_eqtl/GTEx_Analysis_v6p_all-associations/" %&% pops[pop] %&% "_Analysis.v6p.all_snpgene_pairs.txt.gz", nThread = 30) #read in matrix eQTL results
-    
-    #for testing
-    #meqtl <- meqtl[1:1000000,]
-    
-    #meqtl$se <- meqtl$beta / meqtl$statistic #make your own standard error since it's not in the meQTL output
-    meqtl$n_samples <- pops_sample_size[pop]
-    
-    #why can't you just be in normal cpos format
-    meqtl$cpos <- gsub("^([^_]*_[^_]*)_.*$", "\\1", meqtl$variant_id) #https://stackoverflow.com/questions/7449564/regex-return-all-before-the-second-occurrence
-    
-    meQTL_for_COLOC <- left_join(meqtl, frq, by = "cpos") #add freq to COLOC input
-    meQTL_for_COLOC <- meQTL_for_COLOC %>% select(gene_id, SNP, MAF, pval_nominal, slope, slope_se) #subset to COLOC input
-    colnames(meQTL_for_COLOC) <- c("gene_id", "variant_id", "maf", "pval_nominal", "slope", "slope_se")
-    meQTL_for_COLOC <- meQTL_for_COLOC[complete.cases(meQTL_for_COLOC),]
     
     snps_in_both <- intersect(GEMMA_for_COLOC$panel_variant_id, meQTL_for_COLOC$variant_id) #is there a better way to do this? Probably. Do I feel like figuring it out? Nah.
     snps_in_all <- intersect(snps_in_both, sig_gene_SNPs)
