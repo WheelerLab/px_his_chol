@@ -6,7 +6,7 @@ library(R.utils)
 phenos <- c("CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank")
 chrs <- c(1:22)
 pops <- c("AFA", "CAU", "HIS", "AFHI", "ALL") #do combined pops later
-pops_sample_size <- c(233, 352, 578, 585, 1163) #R doesn't have dicts so we're doing it a slgihtly more ratchet way
+pops_sample_size <- c(233, 578, 352, 585, 1163) #R doesn't have dicts so we're doing it a slgihtly more ratchet way
 sig_gene_SNPs <- fread("/home/angela/px_his_chol/MESA_compare/sig_gene_weights/MESA_sig_gene_SNPs.txt", header = F) #so we don't run all the SNPs b/c it takes forever
 sig_gene_SNPs <- sig_gene_SNPs$V1
 
