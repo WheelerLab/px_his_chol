@@ -1,3 +1,4 @@
+#make coloc input from GEMMA results and matrix eQTL data from MESA models
 library(data.table)
 library(dplyr)
 library(R.utils)
