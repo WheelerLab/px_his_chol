@@ -1,4 +1,3 @@
-#converts from GEMMA and matrix eQTL format to input for COLOC script
 library(data.table)
 library(dplyr)
 library(R.utils)
@@ -8,6 +7,8 @@ phenos <- c("CHOL_rank", "HDL_rank", "TRIG_rank", "LDL_rank")
 chrs <- c(1:22)
 pops <- c("AFA", "CAU", "HIS", "AFHI", "ALL") #do combined pops later
 pops_sample_size <- c(233, 352, 578, 585, 1163) #R doesn't have dicts so we're doing it a slgihtly more ratchet way
+sig_gene_SNPs <- fread("/home/angela/px_his_chol/MESA_compare/sig_gene_weights/MESA_sig_gene_SNPs.txt", header = F) #so we don't run all the SNPs b/c it takes forever
+sig_gene_SNPs <- sig_gene_SNPs$V1
 
 for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
   frq <- fread("/home/angela/px_his_chol/MESA_compare/" %&% pops[pop] %&% ".frq")
@@ -32,8 +33,9 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
       meQTL_for_COLOC <- meQTL_for_COLOC[complete.cases(meQTL_for_COLOC),]
 
       snps_in_both <- intersect(GEMMA_for_COLOC$panel_variant_id, meQTL_for_COLOC$variant_id) #is there a better way to do this? Probably. Do I feel like figuring it out? Nah.
-      GEMMA_for_COLOC_chr <- subset(GEMMA_for_COLOC, panel_variant_id %in% snps_in_both)
-      meQTL_for_COLOC_chr <- subset(meQTL_for_COLOC, variant_id %in% snps_in_both)
+      snps_in_all <- intersect(snps_in_both, sig_gene_SNPs)
+      GEMMA_for_COLOC_chr <- subset(GEMMA_for_COLOC, panel_variant_id %in% snps_in_all)
+      meQTL_for_COLOC_chr <- subset(meQTL_for_COLOC, variant_id %in% snps_in_all)
 
       fwrite(meQTL_for_COLOC_chr, "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt", quote = F, sep = "\t", na = "NA", row.names = F, col.names = T)
       gzip("/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt", destname = "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_chr" %&% chr %&% "_" %&% pheno %&% ".txt.gz") #script may only take .gz values so can't hurt to be too careful
