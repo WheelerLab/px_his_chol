@@ -60,6 +60,8 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 * ~~29_backward_elimination_sig_genes.R: backward elimination of significant genes to determine which ones are independent~~ (took too long and too much memory)
  
 * 30a/b_make_coloc_input_MESA/GTEx.R: converts from GEMMA results and matrix eQTL format or GTEx download format to input for COLOC script - https://github.com/hakyimlab/summary-gwas-imputation/wiki/Running-Coloc
+
+* 31_make_COLOC_table.R: process COLOC output and join to novel significant gene associations
  
 Strikethrough: depreciated and not used for final analysis
 
