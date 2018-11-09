@@ -1,4 +1,4 @@
-#backward elimination of significant genes by phenotype and chromosome to determine which ones are independent at a locus
+#backward elimination of significant genes to determine which ones are independent
 library(data.table)
 library(MASS)
 library(dplyr)
