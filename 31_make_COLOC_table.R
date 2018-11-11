@@ -53,5 +53,6 @@ HCHS_COLOC_output_max_first_occur$first_occur <- NULL
 colnames(HCHS_COLOC_output_max_first_occur) <- c("gene", "P4", "tissue", "pheno")
 
 sig_gene_HCHS_COLOC <- left_join(sig_gene_HCHS, HCHS_COLOC_output_max_first_occur, by = c("gene", "tissue", "pheno"))
+fwrite(sig_gene_HCHS_COLOC, "/home/angela/px_his_chol/COLOC/results/sig_gene_HCHS_COLOC_all.csv", sep = ",", quote = F, na = "NA", row.names = F, col.names = T)
 sig_gene_HCHS_COLOC <- subset(sig_gene_HCHS_COLOC, P4 >= 0.5)
-fwrite(sig_gene_HCHS_COLOC, "/home/angela/px_his_chol/COLOC/results/sig_gene_HCHS_COLOC.csv", sep = ",", quote = F, na = "NA", row.names = F, col.names = T)
+fwrite(sig_gene_HCHS_COLOC, "/home/angela/px_his_chol/COLOC/results/sig_gene_HCHS_COLOC_P4_0.5.csv", sep = ",", quote = F, na = "NA", row.names = F, col.names = T)
