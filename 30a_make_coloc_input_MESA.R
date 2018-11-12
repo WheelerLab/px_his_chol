@@ -43,6 +43,8 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     snps_in_all <- intersect(snps_in_both, sig_gene_SNPs)
     GWAS_write <- subset(GWAS_write, panel_variant_id %in% snps_in_all)
     eQTL_write <- subset(eQTL_write, variant_id %in% snps_in_all)
+    GWAS_write <- GWAS_write[order(gene_id),]
+    eQTL_write <- eQTL_write[order(gene_id),]
     
     fwrite(eQTL_write, "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt", quote = F, sep = "\t", na = "NA", row.names = F, col.names = T)
     gzip("/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt", destname = "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt.gz") #script may only take .gz values so can't hurt to be too careful
