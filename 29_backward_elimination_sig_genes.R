@@ -5,7 +5,7 @@ library(dplyr)
 
 setwd("/home/angela/px_his_chol/COLOC/backward_elimination/")
 "%&%" = function(a,b) paste(a,b,sep="")
-sig_gene_HCHS <- fread("/home/angela/px_his_chol/MESA_compare/GTEx_WB/sig_gene_HCHS.csv")
+sig_gene_HCHS <- fread("/home/angela/px_his_chol/MESA_compare/GTEx_WB/sig_gene_HCHS_no_minus.csv")
 pheno <- fread('/home/angela/px_his_chol/editedPheno/11_all_lipid_rank_12236_FID_IID.txt', header = T)
 pheno <- pheno %>% dplyr::select(FID, IID, CHOL_rank, HDL_rank, TRIG_rank, LDL_rank)
 phenos <- c("CHOL", "HDL", "TRIG", "LDL")
@@ -56,8 +56,8 @@ for(pheno_chr in gene_clusters$pheno_chr){
   pheno_name <- pheno_name[[1]][1] #why is this so complicated
   pheno_name_rank <- paste(pheno_name, "rank", sep = "_")
   
-  genes_to_test <- subset(gene_clusters, pheno_chr == paste(pheno_name, chr, sep = "_"))[1][1][[1]]
-  genes_to_test <- genes_to_test$`01.1` #what is going on
+  genes_to_test <- subset(gene_clusters, pheno_chr == paste(pheno_name, chr, sep = "_"))
+  genes_to_test <- genes_to_test[1, 1][[1]] #why is this data structure so weird
   tissues_to_test <- subset(sig_gene_HCHS, gene %in% genes_to_test & chr == as.numeric(chr) & pheno == pheno_name)
   tissue_gene <- paste(tissues_to_test$tissue, tissues_to_test$gene, sep = "_")
   tissue_gene <- c("IID", tissue_gene)
@@ -70,15 +70,18 @@ for(pheno_chr in gene_clusters$pheno_chr){
   back_elim_cluster <- back_elim_cluster[complete.cases(back_elim_cluster),]
   back_elim_cluster$IID <- NULL
   predictor_genes <- colnames(back_elim_cluster)[2:length(colnames(back_elim_cluster))] #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
-  fmla <- as.formula(paste(pheno_name_rank,  " ~ ", paste(predictor_genes, collapse= "+")))
+  fmla <- paste(pheno_name_rank,  " ~ ", paste(predictor_genes, collapse= "+"))
+  fmla <- gsub(" - ", "_", fmla)
+  #fmla <- as.formula(gsub(" - ", "_", paste(pheno_name_rank,  " ~ ", paste(predictor_genes, collapse= "+"))))
+  
   fwrite(back_elim_cluster, pheno_chr %&% "_all_tiss_gene_before_back_elim.csv", row.names = F, col.names = T, sep = ",", na = NA, quote = F)
-  all_tiss_gene <- lm(fmla, data = back_elim) 
-  saveRDS(all_tiss_gene, file = pheno_name %&% "_all_tiss_gene.rds")
+  all_tiss_gene <- lm(fmla, data = back_elim_cluster) 
+  saveRDS(all_tiss_gene, file = pheno_chr %&% "_all_tiss_gene.rds")
   print("Finished making full model for " %&% pheno_name_rank %&% ".")
   
   #using stepAIC, is there a better option somewhere?
   back_elim_complete <- stepAIC(all_tiss_gene, direction = "backward", trace = FALSE) #perform backward analysis on full model
-  saveRDS(back_elim_complete, file = pheno_name %&% "_back_elim.rds")
+  saveRDS(back_elim_complete, file = pheno_chr %&% "_back_elim.rds")
   print("Finished making backward-eliminated model for " %&% pheno_name_rank %&% ".")
 }
 
