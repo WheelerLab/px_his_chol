@@ -34,14 +34,14 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
       colnames(meQTL_for_COLOC) <- c("gene_id", "variant_id", "maf", "pval_nominal", "slope", "slope_se")
       meQTL_for_COLOC <- meQTL_for_COLOC[complete.cases(meQTL_for_COLOC),]
 
-      snps_in_both <- intersect(GEMMA_for_COLOC$panel_variant_id, meQTL_for_COLOC$variant_id) #is there a better way to do this? Probably. Do I feel like figuring it out? Nah.
-      snps_in_all <- intersect(snps_in_both, sig_gene_SNPs)
-      GEMMA_for_COLOC_chr <- subset(GEMMA_for_COLOC, panel_variant_id %in% snps_in_all)
-      meQTL_for_COLOC_chr <- subset(meQTL_for_COLOC, variant_id %in% snps_in_all)
-
       GWAS_write <- rbind(GWAS_write, GEMMA_for_COLOC_chr)
       eQTL_write <- rbind(eQTL_write, meQTL_for_COLOC_chr)
     }
+    
+    snps_in_both <- intersect(GWAS_write$panel_variant_id, eQTL_write$variant_id) #is there a better way to do this? Probably. Do I feel like figuring it out? Nah.
+    snps_in_all <- intersect(snps_in_both, sig_gene_SNPs)
+    GWAS_write <- subset(GWAS_write, panel_variant_id %in% snps_in_all)
+    eQTL_write <- subset(eQTL_write, variant_id %in% snps_in_all)
     
     fwrite(eQTL_write, "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt", quote = F, sep = "\t", na = "NA", row.names = F, col.names = T)
     gzip("/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt", destname = "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt.gz") #script may only take .gz values so can't hurt to be too careful
