@@ -66,12 +66,12 @@ for(pheno_chr in gene_clusters$pheno_chr){
   
   print("Started making models for " %&% pheno_name %&% ", chr" %&% chr %&% ".")
   tiss_gene_to_keep <- c(pheno_name_rank, intersect(colnames(back_elim), tissue_gene))
-  back_elim <- back_elim %>% dplyr::select(tiss_gene_to_keep)
-  back_elim <- back_elim[complete.cases(back_elim),]
-  back_elim$IID <- NULL
-  predictor_genes <- colnames(back_elim)[2:length(colnames(back_elim))] #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
+  back_elim_cluster <- back_elim %>% dplyr::select(tiss_gene_to_keep)
+  back_elim_cluster <- back_elim_cluster[complete.cases(back_elim_cluster),]
+  back_elim_cluster$IID <- NULL
+  predictor_genes <- colnames(back_elim_cluster)[2:length(colnames(back_elim_cluster))] #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
   fmla <- as.formula(paste(pheno_name_rank,  " ~ ", paste(predictor_genes, collapse= "+")))
-  fwrite(back_elim, pheno_chr %&% "_all_tiss_gene_before_back_elim.csv", row.names = F, col.names = T, sep = ",", na = NA, quote = F)
+  fwrite(back_elim_cluster, pheno_chr %&% "_all_tiss_gene_before_back_elim.csv", row.names = F, col.names = T, sep = ",", na = NA, quote = F)
   all_tiss_gene <- lm(fmla, data = back_elim) 
   saveRDS(all_tiss_gene, file = pheno_name %&% "_all_tiss_gene.rds")
   print("Finished making full model for " %&% pheno_name_rank %&% ".")
