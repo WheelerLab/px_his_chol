@@ -21,7 +21,8 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     GEMMA_for_COLOC$sample_size <- 11103
     colnames(GEMMA_for_COLOC) <- c("panel_variant_id", "effect_size", "standard_error", "frequency", "sample_size")
     GEMMA_for_COLOC <- GEMMA_for_COLOC[complete.cases(GEMMA_for_COLOC),] #COLOC does not like missing values
-    GWAS_write <- data.frame(panel_variant_id = character(), effect_size = numeric(), standard_error = numeric(), frequency = numeric(), sample_size = numeric(), stringsAsFactors = F) 
+    #GWAS_write <- data.frame(panel_variant_id = character(), effect_size = numeric(), standard_error = numeric(), frequency = numeric(), sample_size = numeric(), stringsAsFactors = F) 
+    GWAS_write <- GEMMA_for_COLOC
     eQTL_write <- data.frame(gene_id = character(), variant_id = character(), maf = numeric(), pval_nominal = numeric(), slope = numeric(), slope_se = numeric(), stringsAsFactors = F) 
     
     for(chr in chrs){ #yes triple loops are ratchet
@@ -34,8 +35,8 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
       colnames(meQTL_for_COLOC) <- c("gene_id", "variant_id", "maf", "pval_nominal", "slope", "slope_se")
       meQTL_for_COLOC <- meQTL_for_COLOC[complete.cases(meQTL_for_COLOC),]
 
-      GWAS_write <- rbind(GWAS_write, GEMMA_for_COLOC_chr)
-      eQTL_write <- rbind(eQTL_write, meQTL_for_COLOC_chr)
+      #GWAS_write <- rbind(GWAS_write, GEMMA_for_COLOC_chr)
+      eQTL_write <- rbind(eQTL_write, meQTL_for_COLOC)
     }
     
     snps_in_both <- intersect(GWAS_write$panel_variant_id, eQTL_write$variant_id) #is there a better way to do this? Probably. Do I feel like figuring it out? Nah.
