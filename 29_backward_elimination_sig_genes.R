@@ -13,6 +13,10 @@ tissues <- fread("/home/angela/px_yri_chol/PrediXcan/database_tissues.txt", head
 tissues <- tissues$V1 #get list of tissues
 tissues <- c("AFA.db", "AFHI.db", "ALL.db", "CAU.db", "HIS.db", tissues) #add MESA tissues
 back_elim <- pheno[, 2] #extract only IID
+sig_gene_HCHS$gene_tiss_combos <- paste(sig_gene_HCHS$tissue, sig_gene_HCHS$gene, sep = "_")
+gene_tiss_combos <- sig_gene_HCHS$gene_tiss_combos
+gene_tiss_combos <- c("IID", gene_tiss_combos)
+sig_gene_HCHS$gene_tiss_combos <- NULL
 
 #get table of all predicted expressions
 for(tiss_name in tissues){
@@ -24,11 +28,13 @@ for(tiss_name in tissues){
   colnames(tiss) <- tiss_header #assign header line
   colnames(tiss)[1] <- "IID" #rename beginning
   tiss_gene_in_tiss <- c("IID", colnames(tiss)) #add IID to list
+  tiss_gene_in_tiss <- intersect(tiss_gene_in_tiss, gene_tiss_combos)
   for_back_elim <- tiss %>% select(tiss_gene_in_tiss) #select IIDs and intersection of tiss-gene combos
   back_elim <- left_join(back_elim, for_back_elim, by = "IID") #add to list to back-elim
 }
+
 fwrite(back_elim, "/home/angela/px_his_chol/COLOC/backward_elimination/all_predicted_expression.csv", row.names = F, col.names = T, sep = ",", na = "NA", quote = F)
-#back_elim <- fread("/home/angela/px_his_chol/COLOC/backward_elimination/all_predicted_expression.csv", header = T)
+save.image(file = "back_elim.RData") #this likes to crash b/c it's too big
 back_elim <- left_join(back_elim, pheno, by = "IID")
 
 #make clusters of genes
@@ -66,11 +72,11 @@ for(pheno_chr in gene_clusters$pheno_chr){
   fmla <- as.formula(paste(pheno_name_rank,  " ~ ", paste(predictor_genes, collapse= "+")))
   fwrite(back_elim, pheno_chr %&% "_all_tiss_gene_before_back_elim.csv", row.names = F, col.names = T, sep = ",", na = NA, quote = F)
   all_tiss_gene <- lm(fmla, data = back_elim) 
-  saveRDS(all_tiss_gene, file = pheno_chr %&% "_all_tiss_gene.rds")
+  saveRDS(all_tiss_gene, file = pheno_name %&% "_all_tiss_gene.rds")
   print("Finished making full model for " %&% pheno_name_rank %&% ".")
   back_elim_complete <- stepAIC(all_tiss_gene, direction = "backward", trace = FALSE) #perform backward analysis on full model
-  saveRDS(back_elim_complete, file = pheno_chr %&% "_back_elim.rds")
-  print("Finished making backward-eliminated model for " %&% pheno_chr %&% ".")
+  saveRDS(back_elim_complete, file = pheno_name %&% "_back_elim.rds")
+  print("Finished making backward-eliminated model for " %&% pheno_name_rank %&% ".")
 }
 
 
