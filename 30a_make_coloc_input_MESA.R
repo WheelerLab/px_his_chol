@@ -27,7 +27,7 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     
     for(chr in chrs){ #yes triple loops are ratchet
       system("zcat -f /home/lauren/files_for_revisions_plosgen/meqtl_results/MESA/" %&% pops[pop] %&% "_Nk_10_PFs_chr" %&% chr %&% "pcs_3.meqtl.cis.* > /home/angela/px_his_chol/COLOC/COLOC_input/meQTL_input.txt") #fread doesn't seem to like wildcards so we're gonna do this the ugly way
-      meqtl <- fread("/home/angela/px_his_chol/COLOC/COLOC_input/meQTL_input.txt") #read in matrix eQTL results
+      meqtl <- fread("/home/angela/px_his_chol/COLOC/COLOC_input/meQTL_input.txt", nThreads = 40) #read in matrix eQTL results
       meqtl$se <- meqtl$beta / meqtl$statistic #make your own standard error since it's not in the meQTL output
       meqtl$n_samples <- pops_sample_size[pop]
       meQTL_for_COLOC <- left_join(meqtl, frq, by = c("snps" = "SNP")) #add freq to COLOC input
@@ -43,8 +43,8 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     snps_in_all <- intersect(snps_in_both, sig_gene_SNPs)
     GWAS_write <- subset(GWAS_write, panel_variant_id %in% snps_in_all)
     eQTL_write <- subset(eQTL_write, variant_id %in% snps_in_all)
-    GWAS_write <- GWAS_write[order(gene_id),]
-    eQTL_write <- eQTL_write[order(gene_id),]
+    GWAS_write <- GWAS_write[order(GWAS_write$gene_id),]
+    eQTL_write <- eQTL_write[order(eQTL_write$gene_id),]
     
     fwrite(eQTL_write, "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt", quote = F, sep = "\t", na = "NA", row.names = F, col.names = T)
     gzip("/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt", destname = "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt.gz") #script may only take .gz values so can't hurt to be too careful
@@ -53,3 +53,4 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     print("Completed with " %&% pops[pop] %&% ", for " %&% pheno %&% ".")
   }
 }
+
