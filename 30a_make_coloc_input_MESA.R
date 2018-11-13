@@ -43,7 +43,7 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     snps_in_all <- intersect(snps_in_both, sig_gene_SNPs)
     GWAS_write <- subset(GWAS_write, panel_variant_id %in% snps_in_all)
     eQTL_write <- subset(eQTL_write, variant_id %in% snps_in_all)
-    GWAS_write <- GWAS_write[order(GWAS_write$gene_id),]
+    #GWAS_write <- GWAS_write[order(GWAS_write$gene_id),] #don't order a column that doesn't exist
     eQTL_write <- eQTL_write[order(eQTL_write$gene_id),]
     
     fwrite(eQTL_write, "/home/angela/px_his_chol/COLOC/COLOC_input/eQTL_" %&% pops[pop] %&% "_" %&% pheno %&% ".txt", quote = F, sep = "\t", na = "NA", row.names = F, col.names = T)
