@@ -27,7 +27,7 @@ for(pop in 1:length(pops)){ #read in pop's .frq file for MAF
     
     for(chr in chrs){ #yes triple loops are ratchet
       system("zcat -f /home/lauren/files_for_revisions_plosgen/meqtl_results/MESA/" %&% pops[pop] %&% "_Nk_10_PFs_chr" %&% chr %&% "pcs_3.meqtl.cis.* > /home/angela/px_his_chol/COLOC/COLOC_input/meQTL_input.txt") #fread doesn't seem to like wildcards so we're gonna do this the ugly way
-      meqtl <- fread("/home/angela/px_his_chol/COLOC/COLOC_input/meQTL_input.txt", nThreads = 40) #read in matrix eQTL results
+      meqtl <- fread("/home/angela/px_his_chol/COLOC/COLOC_input/meQTL_input.txt", nThread = 40) #read in matrix eQTL results
       meqtl$se <- meqtl$beta / meqtl$statistic #make your own standard error since it's not in the meQTL output
       meqtl$n_samples <- pops_sample_size[pop]
       meQTL_for_COLOC <- left_join(meqtl, frq, by = c("snps" = "SNP")) #add freq to COLOC input
