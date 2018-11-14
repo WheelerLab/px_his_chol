@@ -62,6 +62,8 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 * 30a/b_make_coloc_input_MESA/GTEx.R: converts from GEMMA results and matrix eQTL format or GTEx download format to input for COLOC script - https://github.com/hakyimlab/summary-gwas-imputation/wiki/Running-Coloc
 
 * 31_make_COLOC_table.R: process COLOC output and join to novel significant gene associations
+
+* 32_plot_pred_exp.R: make scatterplot of predicted expression vs. phenotype
  
 Strikethrough: depreciated and not used for final analysis
 
