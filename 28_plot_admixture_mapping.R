@@ -1,29 +1,6 @@
 #make admixture mapping plot for gene in input
 library(data.table)
 library(dplyr)
-library(ggplot2)
-"%&%" = function(a,b) paste(a,b,sep="")
-scientific_10 <- function(x) {parse(text=gsub("e", " %*% 10^", scales::scientific_format()(x)))} #https://stackoverflow.com/questions/10762287/how-can-i-format-axis-labels-with-exponents-with-ggplot2-and-scales
-
-plot_admixture_mapping <- function(chr, pheno, tissue, gene){
-  GWAS_file <- "/home/angela/px_his_chol/GEMMA/output/" %&% pheno %&% "_sig_snps_p-0.txt"
-  NAT_file <- "/home/angela/px_his_chol/local_anc_GEMMA/RFMix_output/output/chr" %&% chr %&% "_" %&% pheno %&% "_NAT.assoc.txt"
-  IBS_file <- "/home/angela/px_his_chol/local_anc_GEMMA/RFMix_output/output/chr" %&% chr %&% "_" %&% pheno %&% "_IBS.assoc.txt"
-  YRI_file <- "/home/angela/px_his_chol/local_anc_GEMMA/RFMix_output/output/chr" %&% chr %&% "_" %&% pheno %&% "_YRI.assoc.txt"
-  SNPs_file <- "/home/angela/px_his_chol/MESA_compare/GTEx_WB/SNPs_n_samples/" %&% tissue %&% "_SNPs.txt"
-
-  #read in input files
-  GWAS <- fread(GWAS_file, stringsAsFactors = F)
-  NAT <- fread(NAT_file, stringsAsFactors = F)
-  IBS <- fread(IBS_file, stringsAsFactors = F)
-  YRI <- fread(YRI_file, stringsAsFactors = F)
-  gene_SNPs <- fread(SNPs_file, stringsAsFactors = F)
-
-  #label predictor and non-predictor SNPs
-  gene_SNPs <- subset(gene_SNPs, V3 == gene)
-#make admixture mapping plot for gene in input
-library(data.table)
-library(dplyr)
 library(ecoflux)
 library(ggplot2)
 "%&%" = function(a,b) paste(a,b,sep="")
