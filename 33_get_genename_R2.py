@@ -1,3 +1,4 @@
+#pull gene names and R2 from MESA db files
 import sqlite3
 import pandas
 pops = ["AFA", "AFHI", "ALL", "CAU", "HIS"]
