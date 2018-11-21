@@ -9,7 +9,7 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 * ~~04_make_KING_GRM.R: defunct, use 13_make_KING.R~~
 
-* 05_sig_genes_GEMMA_pred_exp.R: finds most significant genes (both FDR < 0.05 and p < bonferroni correction) from GEMMA predicted expression LMM output
+* ~~05_sig_genes_GEMMA_pred_exp.R: finds most significant genes (both FDR < 0.05 and p < bonferroni correction) from GEMMA predicted expression LMM output~~
 
 * 06_sig_SNP_GEMMA.py: finds significant SNPs in a series of GEMMA files
 
@@ -59,13 +59,15 @@ Scripts used in studying the lipid traits of the Hispanic Community Health Study
 
 * 29_backward_elimination_sig_genes.R: backward elimination of significant genes by phenotype and chromosome to determine which ones are independent at a locus
  
-* 30a/b_make_coloc_input_MESA/GTEx.R: converts from GEMMA results and matrix eQTL format or GTEx download format to input for COLOC script - https://github.com/hakyimlab/summary-gwas-imputation/wiki/Running-Coloc
+* 30a/b_make_coloc_input_MESA/GTEx.R: converts from GEMMA results and matrix eQTL format or GTEx download format to input for run_COLOC.py script - https://github.com/hakyimlab/summary-gwas-imputation/wiki/Running-Coloc
 
 * 31_make_COLOC_table.R: process COLOC output and join to novel significant gene associations
 
 * 32_plot_pred_exp.R: make scatterplot of predicted expression vs. phenotype
  
 * 33_get_genename_R2.py: pull gene names and R2 from MESA db files through sqlite3 library
+ 
+* 34_make_pred_exp_result_table.R: extracts both all and significant (P < 9.654e-6) PrediXcan results; adds gene name and starting bp
  
 Strikethrough: depreciated and not used for final analysis
 
