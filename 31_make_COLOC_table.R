@@ -3,7 +3,7 @@ library(data.table)
 library(dplyr)
 "%&%" = function(a,b) paste(a,b,sep="")
 
-sig_gene_HCHS <- fread("/home/angela/px_his_chol/MESA_compare/sig_PX_results_MESA.csv")
+sig_gene_HCHS <- fread("/home/angela/px_his_chol/sig_PX_results.csv")
 sig_gene_HCHS$gene <- gsub("\\..", "", sig_gene_HCHS$gene)
 phenos <- c("CHOL", "HDL", "TRIG", "LDL")
 pops <- c("AFA", "AFHI", "ALL", "CAU", "HIS")
