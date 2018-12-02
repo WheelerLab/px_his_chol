@@ -1,5 +1,5 @@
 # px_his_chol
-Scripts used in studying the lipid traits of the Hispanic Community Health Study and the Multi-Ethnic Study of Atherosclerosis, Hispanic
+Scripts used in studying the lipid traits of the Hispanic Community Health Study and the Multi-Ethnic Study of Atherosclerosis, Hispanic. This repository is mainly for documentation. For more user-friendly and better-explained scripts, please refer to [Ad_PX_pipe](https://github.com/aandaleon/Ad_PX_pipe/blob/master/README.md).
 
 * ~~01_PrediXcan_dosages_to_GEMMA_BIMBAM.py: defunct, see 02_PrediXcan_dosages_to_GEMMA.py~~
 
