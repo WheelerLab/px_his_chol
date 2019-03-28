@@ -15,9 +15,9 @@ for(pheno in phenos){
   for(pop in pops){
     COLOC_output <- fread("/home/angela/px_his_chol/COLOC/results/" %&% pop %&% "_" %&% pheno %&% "_rank.txt.gz", header = T)
     COLOC_output <- COLOC_output %>% dplyr::select(gene_id, p3, p4)
-    COLOC_output$tissue <- paste(pop, ".db", sep = "")
+    COLOC_output$tissue <- pop
     COLOC_output$pheno <- pheno
-    COLOC_output$gene_id <- gsub("\\..", "", COLOC_output$gene_id)
+    #COLOC_output$gene_id <- gsub("\\..", "", COLOC_output$gene_id)
     HCHS_COLOC_output <- rbind(HCHS_COLOC_output, COLOC_output)
   }
 } 
@@ -30,7 +30,7 @@ for(pheno in phenos){
     COLOC_output <- COLOC_output %>% dplyr::select(gene_id, p3, p4)
     COLOC_output$tissue <- tiss
     COLOC_output$pheno <- pheno
-    COLOC_output$gene_id <- gsub("\\..", "", COLOC_output$gene_id)
+    #COLOC_output$gene_id <- gsub("\\..", "", COLOC_output$gene_id)
     HCHS_COLOC_output <- rbind(HCHS_COLOC_output, COLOC_output)
   }
 }
@@ -44,9 +44,13 @@ colnames(HCHS_COLOC_output) <- c("gene", "P3", "P4", "tissue", "pheno")
 HCHS_COLOC_output <- left_join(HCHS_COLOC_output, tiss_abbv, by = "tissue")
 HCHS_COLOC_output$tissue <- HCHS_COLOC_output$tiss
 HCHS_COLOC_output$tiss <- NULL 
+fwrite(HCHS_COLOC_output, "/home/angela/px_his_chol/COLOC/results/HCHS_COLOC_all.csv", sep = ",", quote = F, na = "NA", row.names = F, col.names = T)
 
 sig_gene_HCHS_COLOC <- left_join(sig_gene_HCHS, HCHS_COLOC_output, by = c("gene", "tissue", "pheno"))
 fwrite(sig_gene_HCHS_COLOC, "/home/angela/px_his_chol/COLOC/results/sig_gene_HCHS_COLOC_P4_all.csv", sep = ",", quote = F, na = "NA", row.names = F, col.names = T)
-sig_gene_HCHS_COLOC <- subset(sig_gene_HCHS_COLOC, P4 >= 0.5)
-sig_gene_HCHS_COLOC <- sig_gene_HCHS_COLOC[order(sig_gene_HCHS_COLOC$pheno, sig_gene_HCHS_COLOC$genename),]
-fwrite(sig_gene_HCHS_COLOC, "/home/angela/px_his_chol/COLOC/results/sig_gene_HCHS_COLOC_P4_0.5.csv", sep = ",", quote = F, na = "NA", row.names = F, col.names = T)
+sig_gene_HCHS_COLOC_P4 <- subset(sig_gene_HCHS_COLOC, P4 >= 0.5)
+sig_gene_HCHS_COLOC_P4 <- sig_gene_HCHS_COLOC_P4[order(sig_gene_HCHS_COLOC_P4$chr, sig_gene_HCHS_COLOC_P4$start_bp),]
+fwrite(sig_gene_HCHS_COLOC_P4, "/home/angela/px_his_chol/COLOC/results/sig_gene_HCHS_COLOC_P4_0.5.csv", sep = ",", quote = F, na = "NA", row.names = F, col.names = T)
+sig_gene_HCHS_COLOC_P3 <- subset(sig_gene_HCHS_COLOC, P3 <= 0.5)
+sig_gene_HCHS_COLOC_P3 <- sig_gene_HCHS_COLOC_P3[order(sig_gene_HCHS_COLOC_P3$chr, sig_gene_HCHS_COLOC_P3$start_bp),]
+fwrite(sig_gene_HCHS_COLOC_P3, "/home/angela/px_his_chol/COLOC/results/sig_gene_HCHS_COLOC_P3_0.5.csv", sep = ",", quote = F, na = "NA", row.names = F, col.names = T)
