@@ -48,10 +48,13 @@ melted <- left_join(melted, region, by = c("variable" = "IID"))
 #rotation plot
 fig1 <- ggplot(data = melted, aes(x = PCs, y = as.numeric(value), group = variable)) + 
   geom_line(aes(color = REGION)) + 
-  scale_color_brewer(palette = "Set1") + 
-  labs(color = "Region", y = "eigenvalue") + 
+  #scale_color_brewer(palette = "Set1") + 
+  scale_color_viridis(discrete = T, option = "magma") + 
+  labs(color = "Region", fill = "Region", y = "eigenvalue") + 
   theme_bw() + 
-  theme(text = element_text(size = 15))
+  guides(color = guide_legend(override.aes = list(size = 6))) + #make legend lines bigger
+  theme(text = element_text(size = 15), legend.key = element_rect(colour = 'black', size = 0.2))
+fig1
 
 pdf("/home/angela/px_his_chol/Manuscript_figures/Fig1.pdf", width = 6, height = 3)
 print(fig1)
@@ -61,14 +64,20 @@ tiff("/home/angela/px_his_chol/Manuscript_figures/Fig1.tiff", width = 15.24, hei
 print(fig1)
 dev.off()
 
-'
 #PC1 vs PC2
-PC1_PC2 <- pcs %>% select(REGION, PC1, PC2)
+PC1_PC2 <- pcs %>% dplyr::select(REGION, PC1, PC2)
 colnames(PC1_PC2) <- c("Region", "PC1", "PC2")
-ggplot() + 
+SFig1 <- ggplot() + 
   geom_point(data = PC1_PC2, aes(x = PC1, y = PC2, col = Region))+
   theme_bw() + 
   theme(text = element_text(size=15)) + 
   scale_colour_brewer(palette="Set1")
-'
+
+pdf("/home/angela/px_his_chol/Manuscript_figures/SFig1.pdf", width = 6, height = 3)
+print(SFig1)
+dev.off()
+
+tiff("/home/angela/px_his_chol/Manuscript_figures/SFig1.tiff", width = 15.24, height = 7.62, units = 'cm', res = 300, compression = 'lzw')
+print(SFig1)
+dev.off()
 
