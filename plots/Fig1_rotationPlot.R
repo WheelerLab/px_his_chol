@@ -49,14 +49,13 @@ melted <- left_join(melted, region, by = c("variable" = "IID"))
 fig1 <- ggplot(data = melted, aes(x = PCs, y = as.numeric(value), group = variable)) + 
   geom_line(aes(color = REGION)) + 
   #scale_color_brewer(palette = "Set1") + 
-  scale_color_viridis(discrete = T, option = "magma") + 
-  labs(color = "Region", fill = "Region", y = "eigenvalue") + 
+  scale_color_viridis(discrete = T, option = "inferno") + 
+  labs(color = "Region", fill = "Region", y = "Principal component weights") + 
   theme_bw() + 
   guides(color = guide_legend(override.aes = list(size = 6))) + #make legend lines bigger
   theme(text = element_text(size = 15), legend.key = element_rect(colour = 'black', size = 0.2))
-fig1
 
-pdf("/home/angela/px_his_chol/Manuscript_figures/Fig1.pdf", width = 6, height = 3)
+pdf("/home/angela/px_his_chol/Manuscript_figures/Fig1.pdf", width = 8, height = 5)
 print(fig1)
 dev.off()
 
